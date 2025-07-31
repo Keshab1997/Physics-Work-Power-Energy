@@ -141,14 +141,11 @@ function nextQuestion() {
   }
 }
 
-// ### UPDATED FUNCTION ###
 function showFinalResult() {
   clearInterval(timerInterval);
   
-  // --- NEW: Call the function to save the score to Firebase silently ---
-  // This will only work if an admin is logged in.
+  // This will now trigger the universal score saving function
   saveScoreToFirebase(correctCount, quizSet.questions.length);
-  // -------------------------------------------------------------------
 
   const container = document.getElementById("quiz-container");
   container.innerHTML = `
@@ -257,31 +254,60 @@ function resetLeaderboard() {
 }
 
 // ===============================================
-// --- NEW: Firebase Score Saving Section ---
+// --- UPDATED Firebase Score Saving Section (For All Users) ---
 // ===============================================
 
 async function saveScoreToFirebase(finalScore, totalQuestions) {
-    // Check if Firebase is initialized and if a user is logged in
-    if (typeof firebase === 'undefined' || !firebase.auth().currentUser) {
-        console.log("Firebase not ready or no user logged in. Score not saved to Firebase.");
+    // Check if Firebase is initialized.
+    if (typeof firebase === 'undefined') {
+        console.log("Firebase is not available on this page.");
         return;
     }
-
-    const user = firebase.auth().currentUser;
-
+    
     try {
+        let userIdentifier;
+        const loggedInUser = firebase.auth().currentUser;
+
+        if (loggedInUser) {
+            // If the admin is logged in, use their email.
+            userIdentifier = loggedInUser.email;
+            console.log(`Firebase: Admin (${userIdentifier}) is saving a score.`);
+        } else {
+            // If it's a regular user, prompt for their name.
+            userIdentifier = prompt("লিডারবোর্ডে আপনার স্কোর যোগ করতে নাম দিন:", localStorage.getItem("quizUserName") || "Guest");
+            
+            if (!userIdentifier || userIdentifier.trim() === "") {
+                console.log("User did not provide a name. Score not saved to Firebase.");
+                // alert("স্কোর সেভ করার জন্য একটি নাম প্রয়োজন।"); // Optional: you can uncomment this
+                return; 
+            }
+            
+            localStorage.setItem("quizUserName", userIdentifier.trim());
+        }
+        
         const quizName = typeof quizSet !== "undefined" ? quizSet.name : "Unknown Quiz";
+
+        // Add the score to the Firestore database
         await firebase.firestore().collection("quiz_scores").add({
-            userId: user.uid,
-            email: user.email,
+            email: userIdentifier.trim(), // This field will hold either the admin's email or the user's name
             score: finalScore,
             totalQuestions: totalQuestions,
             quizName: quizName,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        console.log(`Firebase: Score (${finalScore}/${totalQuestions}) for '${quizName}' saved successfully for admin.`);
+
+        // Provide feedback
+        if (!loggedInUser) {
+            alert(`অভিনন্দন, ${userIdentifier.trim()}! আপনার স্কোর সফলভাবে আমাদের রেকর্ডে যোগ করা হয়েছে।`);
+        } else {
+            console.log(`Firebase: Score saved successfully.`);
+        }
+
     } catch (error) {
         console.error("Firebase: Error saving score:", error);
+        if (!firebase.auth().currentUser) {
+            alert("দুঃখিত, স্কোর সেভ করার সময় একটি ইন্টারনেট সমস্যা হয়েছে।");
+        }
     }
 }
 
