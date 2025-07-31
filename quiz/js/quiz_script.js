@@ -1,7 +1,12 @@
 // ===============================================
 // --- Day/Night Mode Toggle Section (FIXED) ---
 // ===============================================
-
+firebase.auth().onAuthStateChanged(function(user) {
+  if (!user) {
+    alert("এই কুইজ দিতে হলে আপনাকে লগইন করতে হবে!");
+    window.location.href = "/Study-With-Keshab/login.html";
+  }
+});
 function setupModeToggle() {
     const modeToggleBtn = document.getElementById("mode-toggle");
     const body = document.body;
