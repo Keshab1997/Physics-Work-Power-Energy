@@ -6,17 +6,21 @@
     <title>কুইজ সেট ১ - কার্য, ক্ষমতা ও শক্তি</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="css/quiz_style.css"> <!-- External common styles -->
+    <link rel="stylesheet" href="../css/quiz_style.css"> <!-- External common styles -->
 
-    <!-- === Firebase Script Section (NEW) === -->
-    <!-- এই স্ক্রিপ্টগুলো Firebase-এর বিভিন্ন সার্ভিস লোড করবে -->
+    <!-- === Firebase Script Section (Path Corrected) === -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <!-- আপনার কনফিগারেশন ফাইল (সঠিক পথসহ) -->
-    <!-- যেহেতু এই ফাইলটি 'quiz' ফোল্ডারের ভেতরে, তাই দুই ধাপ বাইরে যেতে ../../ ব্যবহার করা হয়েছে -->
-    <script src="../js/firebase-config.js"></script>
-    <!-- === End of Firebase Script Section === -->
+    
+    <!-- === পরিবর্তন: Firebase কনফিগারেশনের পাথ ঠিক করা হয়েছে === -->
+    <!-- এই কুইজ ফাইলটি মূল প্রোজেক্টের ৩ ধাপ ভেতরে আছে (Physics-Work-Power-Energy/quiz/js/) -->
+    <!-- তাই ../../../js/firebase-config.js পাথটি ব্যবহার করতে হবে আপনার মূল সাইটের কনফিগারেশন লোড করার জন্য -->
+    <!-- অথবা, আপনি এই রিপোজিটরিতেও একটি firebase-config.js ফাইল রাখতে পারেন -->
+    <script src="../../../Study-With-Keshab/js/firebase-config.js"></script> 
+    <!-- দ্রষ্টব্য: উপরের পাথটি আপনার GitHub ইউজারনেম/রিপোনেম অনুযায়ী বদলাতে পারে। -->
+    <!-- সহজ সমাধান হলো, আপনার মূল সাইটের firebase-config.js এর কোড কপি করে এই রিপোজিটরির js ফোল্ডারে রাখা। -->
+    <!-- আপাতত ধরে নিচ্ছি, আপনার মূল সাইট থেকে লোড হবে। -->
 
 </head>
 <body class="day-mode">
@@ -32,16 +36,18 @@
         </header>
         <div id="quiz-container"></div>
         <div class="page-navigation">
-            <!-- পূর্ববর্তী বাটনের জন্য লজিক প্রয়োজন হলে যোগ করা যেতে পারে -->
             <a href="#" class="btn btn-secondary disabled"><i class="fas fa-arrow-left"></i> পূর্ববর্তী</a>
-            <!-- হোম পেজের সঠিক পথ দিন, যেমন ../index.html -->
-            <a href="../index.html" class="btn btn-primary"><i class="fas fa-home"></i> হোম</a>
+            <!-- হোম পেজের সঠিক পথ দিন -->
+            <a href="https://keshab1997.github.io/Study-With-Keshab/index.html" class="btn btn-primary"><i class="fas fa-home"></i> হোম</a>
             <a href="Qset2.html" class="btn btn-secondary">পরবর্তী <i class="fas fa-arrow-right"></i></a>
         </div>
     </main>
+
     <script>
+        // === পরিবর্তন: quizSet অবজেক্টে subject এবং chapter যোগ করা হয়েছে ===
         const quizSet = {
-            name: "কার্য, ক্ষমতা ও শক্তি - Set 1 (প্রশ্ন ১-১০)",
+            subject: "পদার্থবিদ্যা (Physics)",
+            name: "কার্য, ক্ষমতা ও শক্তি - সেট ১", // এটি অধ্যায়ের নাম হিসেবে কাজ করবে
             questions: [
                 {
                     question: "যদি বল (Force) শূন্য হয়, তাহলে কৃত কার্য (work) কত হবে? *(RRB GROUP-D 31.10.2018)*",
@@ -106,7 +112,75 @@
             ]
         };
     </script>
-    <!-- আপনার কুইজ স্ক্রিপ্ট ফাইল -->
-    <script src="js/quiz_script.js"></script>
+    
+    <!-- === পরিবর্তন: আপনার quiz_script.js এর সম্পূর্ণ আপডেট করা কোড এখানে যুক্ত করা হয়েছে === -->
+    <script>
+        // --- Day/Night Mode, Core Quiz Logic, Leaderboard ইত্যাদি আগের মতোই ---
+        // (এই অংশটি আপনার দেওয়া কোড থেকে নেওয়া হয়েছে এবং অপরিবর্তিত আছে)
+        
+        function setupModeToggle(){const modeToggleBtn=document.getElementById("mode-toggle"),body=document.body;function applyMode(e){"dark-mode"===e?(body.classList.add("dark-mode"),body.classList.remove("day-mode"),modeToggleBtn&&(modeToggleBtn.innerHTML='<i class="fas fa-sun"></i>')):(body.classList.add("day-mode"),body.classList.remove("dark-mode"),modeToggleBtn&&(modeToggleBtn.innerHTML='<i class="fas fa-moon"></i>'))}const savedMode=localStorage.getItem("quizAppMode");savedMode?applyMode(savedMode):applyMode("day-mode"),modeToggleBtn&&modeToggleBtn.addEventListener("click",()=>{body.classList.contains("day-mode")?(applyMode("dark-mode"),localStorage.setItem("quizAppMode","dark-mode")):(applyMode("day-mode"),localStorage.setItem("quizAppMode","day-mode"))})}let currentQuestionIndex=0,selectedAnswer=null,score=0,correctCount=0,wrongCount=0,correctSound=new Audio("../sounds/correct.mp3"),wrongSound=new Audio("../sounds/wrong.mp3"),userAnswers=[],shuffledOptionsPerQuestion=[],timerInterval;function shuffleArray(e){for(let t=e.length-1;t>0;t--){const o=Math.floor(Math.random()*(t+1));[e[t],e[o]]=[e[o],e[t]]}}function startTimer(){let e=0,t=0;clearInterval(timerInterval);let o=()=>{e++,60===e&&(e=0,t++);const o=`${String(t).padStart(2,"0")}:${String(e).padStart(2,"0")}`;document.getElementById("timer").textContent=o};document.getElementById("timer").textContent="00:00",timerInterval=setInterval(o,1e3)}function showQuestion(){selectedAnswer=null,startTimer();const e=document.getElementById("quiz-container"),t=quizSet.questions[currentQuestionIndex];let o=[...t.options];shuffleArray(o),shuffledOptionsPerQuestion[currentQuestionIndex]=o;const n=o.indexOf(t.options[t.answer]);e.innerHTML=`\n    <div class="mb-4">\n      <h2 class="text-xl md:text-2xl font-semibold mb-6 text-center">প্রশ্ন ${currentQuestionIndex+1}: ${t.question}</h2>\n      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">\n        ${o.map((e,t)=>`\n          <button class="option-btn" onclick="selectAnswer(${t}, ${n})" data-index="${t}">\n            <span class="option-prefix">${String.fromCharCode(65+t)}.</span>\n            <span>${e}</span>\n          </button>\n        `).join("")}\n      </div>\n    </div>\n    <button id="nextBtn" onclick="nextQuestion()" class="action-btn w-full mt-6" disabled>পরবর্তী প্রশ্ন</button>`}window.selectAnswer=function(e,t){if(null!==selectedAnswer)return;clearInterval(timerInterval),selectedAnswer=e,document.querySelectorAll(".option-btn").forEach(e=>e.disabled=!0);const o=document.querySelector(`[data-index="${t}"]`);o.classList.add("correct"),e!==t?(document.querySelector(`[data-index="${e}"]`).classList.add("incorrect"),wrongCount++,wrongSound.play()):(score++,correctCount++,correctSound.play()),userAnswers[currentQuestionIndex]=e,document.getElementById("correct-count").textContent=`✔️ ${correctCount}`,document.getElementById("wrong-count").textContent=`❌ ${wrongCount}`,document.getElementById("nextBtn").disabled=!1,document.getElementById("nextBtn").focus()},function nextQuestion(){null!==selectedAnswer&&(selectedAnswer=null,++currentQuestionIndex<quizSet.questions.length?showQuestion():showFinalResult())}function showFinalResult(){clearInterval(timerInterval),saveScoreToFirebase(correctCount);const e=document.getElementById("quiz-container");e.innerHTML=`\n    <div class="text-center space-y-5">\n      <h2 class="text-3xl font-bold text-green-600">🎉 কুইজ শেষ!</h2>\n      <p class="text-xl">আপনার স্কোর: <strong class="text-blue-600">${correctCount}</strong> / ${quizSet.questions.length}</p>\n      <div class="flex flex-wrap justify-center gap-3">\n        <button onclick="showReview()" class="action-btn">রিভিউ দেখুন</button>\n        <button onclick="saveScore()" class="action-btn green">লিডারবোর্ডে যোগ করুন</button>\n        <button onclick="location.reload()" class="action-btn gray">🔁 আবার দিন</button>\n      </div>\n    </div>`}function showReview(){const e=document.getElementById("quiz-container");let t=`<div class="space-y-4"><h2 class="text-2xl font-bold text-center text-blue-700 mb-4">📚 কুইজ রিভিউ</h2>`;for(let o=0;o<quizSet.questions.length;o++){const n=quizSet.questions[o],s=userAnswers[o],r=shuffledOptionsPerQuestion[o],l=r.indexOf(n.options[n.answer]);let c=s===l,a=c?"review-correct":"review-incorrect";t+=`\n      <div class="review-card text-left ${a}">\n        <h3 class="font-semibold mb-2">📝 প্রশ্ন ${o+1}: ${n.question}</h3>\n        <p><strong>সঠিক উত্তর:</strong> ${n.options[n.answer]}</p>`,void 0!==s&&(t+=`<p><strong>আপনার উত্তর:</strong> <span class="font-bold ${c?"text-green-700":"text-red-700"}">${r[s]}</span></p>`),t+=`<p class="mt-2"><strong>ব্যাখ্যা:</strong> ${n.explanation||"কোনো ব্যাখ্যা নেই"}</p></div>`}t+='<div class="text-center mt-6"><button onclick="location.reload()" class="action-btn gray">🔁 আবার দিন</button></div></div>',e.innerHTML=t}function saveScore(){let e=prompt("লিডারবোর্ডে যোগ করার জন্য আপনার নাম দিন:",localStorage.getItem("quizUserName")||"");if(e&&""!==e.trim()){const t=e.trim();localStorage.setItem("quizUserName",t);const o=JSON.parse(localStorage.getItem("comprehensiveLeaderboard")||"{}");o[t]||(o[t]={totalScore:0,scores:{}});const n=quizSet.name;o[t].scores[n]&&correctCount<=o[t].scores[n].score||(o[t].scores[n]={score:correctCount,total:quizSet.questions.length});let s=0;for(const r of Object.values(o[t].scores))s+=r.score;o[t].totalScore=s,localStorage.setItem("comprehensiveLeaderboard",JSON.stringify(o)),showLeaderboard()}}function showLeaderboard(){const e=JSON.parse(localStorage.getItem("comprehensiveLeaderboard")||"{}"),t=Object.entries(e).map(([e,t])=>({name:e,...t})).sort((e,t)=>t.totalScore-e.totalScore).slice(0,10);let o=`<div class="text-center space-y-4"><h2 class="text-2xl font-bold text-purple-700">🏆লিডারবোর্ড🏆</h2>`;0===t.length?o+='<p class="text-gray-500">লিডারবোর্ড এখনো খালি!</p>':(o+='<ol class="leaderboard-list">',t.forEach((e,t)=>{o+=`<li class="leaderboard-item"><div class="main-score"><span>${t+1}. ${e.name}</span><strong>মোট স্কোর: ${e.totalScore}</strong></div><ul class="details-list">`;for(const[n,s]of Object.entries(e.scores))o+=`<li>${n}: <strong>${s.score}</strong></li>`;o+="</ul></li>"}),o+="</ol>"),o+='<div class="flex flex-wrap justify-center gap-3 mt-6"><button onclick="showReview()" class="action-btn green">📖 রিভিউ দেখুন</button><button onclick="resetLeaderboard()" class="action-btn gray">লিডারবোর্ড রিসেট করুন</button><button onclick="location.reload()" class="action-btn">🔁 আবার খেলুন</button></div></div>',document.getElementById("quiz-container").innerHTML=o}function resetLeaderboard(){confirm("আপনি কি সম্পূর্ণ লিডারবোর্ড মুছে ফেলতে চান? এটি সব ব্যবহারকারীর ডেটা মুছে দেবে।")&&(localStorage.removeItem("comprehensiveLeaderboard"),showLeaderboard())}function setupKeyboard(){document.addEventListener("keydown",function(e){if("INPUT"!==document.activeElement.tagName&&"TEXTAREA"!==document.activeElement.tagName&&("Enter"===e.key&&document.getElementById("nextBtn")&&!document.getElementById("nextBtn").disabled?nextQuestion():null===selectedAnswer)){const t={1:0,2:1,3:2,4:3,a:0,b:1,c:2,d:3},o=e.key.toLowerCase();if(t.hasOwnProperty(o)){e.preventDefault();const n=document.querySelectorAll(".option-btn"),s=t[o];s<n.length&&n[s].click()}}})}
+        
+        // === নতুন এবং উন্নত Firebase স্কোর সেভিং ফাংশন (সংস্করণ ২.০) ===
+        async function saveScoreToFirebase(finalScore) {
+            if (typeof firebase === 'undefined' || typeof firebase.auth === 'undefined') {
+                console.warn("Firebase is not initialized. Score not saved.");
+                return;
+            }
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+            const currentUser = auth.currentUser;
+
+            if (!currentUser) {
+                console.log("No user is logged in. Score not saved to Firebase.");
+                return;
+            }
+            
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (userDoc.exists && userDoc.data().role === 'admin') {
+                    console.log("Admin user detected. Score will not be saved.");
+                    return;
+                }
+            } catch (error) {
+                console.error("Error checking user role:", error);
+                return;
+            }
+
+            const subjectName = typeof quizSet !== "undefined" ? quizSet.subject : "অজানা বিষয়";
+            const chapterName = typeof quizSet !== "undefined" ? quizSet.name : "সাধারণ কুইজ";
+
+            const scoreData = {
+                userId: currentUser.uid,
+                email: currentUser.email,
+                subject: subjectName,
+                chapter: chapterName,
+                score: finalScore,
+                totalQuestions: quizSet.questions.length,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection("quiz_scores").add(scoreData);
+                console.log("Score saved successfully to Firebase for user:", currentUser.email);
+                alert("অভিনন্দন! আপনার স্কোর সফলভাবে সেভ করা হয়েছে।");
+            } catch (error) {
+                console.error("Error saving score to Firebase:", error);
+                alert("দুঃখিত, আপনার স্কোর সেভ করার সময় একটি সমস্যা হয়েছে।");
+            }
+        }
+
+        // --- App Initialization ---
+        document.addEventListener("DOMContentLoaded", () => {
+          setupModeToggle();
+          if (typeof quizSet !== "undefined") {
+            document.getElementById("quiz-title").textContent = quizSet.name;
+            shuffleArray(quizSet.questions);
+            showQuestion();
+            setupKeyboard();
+          } else {
+            document.getElementById("quiz-container").innerHTML = "<p class='text-red-600 font-bold text-center'>দুঃখিত, প্রশ্ন সেট লোড করা যায়নি।</p>";
+          }
+        });
+    </script>
 </body>
 </html>
