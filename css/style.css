@@ -1,0 +1,268 @@
+/* ===================================================================
+   Style.css (Reorganized & Enhanced Version)
+   Author: Keshab Sarkar
+   Project: Physics Study App
+   =================================================================== */
+
+/* --- 1. Settings, Fonts & Variables (সেটিংস, ফন্ট ও ভেরিয়েবল) --- */
+
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Day Mode Colors */
+    --bg-day: #f4f7f9;
+    --card-bg-day: #ffffff;
+    --text-color-day: #34495e;
+    --heading-color-day: #2c3e50;
+    --border-color-day: #e5eaee;
+    --accent-color-day: #3498db;
+    --accent-color-light-day: #eaf4fb;
+    
+    /* Dark Mode Colors */
+    --bg-dark: #121212;
+    --card-bg-dark: #1e1e1e;
+    --text-color-dark: #e0e0e0;
+    --heading-color-dark: #ffffff;
+    --border-color-dark: #333;
+    --accent-color-dark: #5dade2; /* ডার্ক মোডের জন্য হালকা নীল */
+    --accent-color-light-dark: #2c3e50;
+}
+
+/* --- 2. Global & Body Styles (গ্লোবাল ও বডি স্টাইল) --- */
+
+body {
+    font-family: 'Hind Siliguri', sans-serif;
+    margin: 0;
+    padding: 20px;
+    transition: background-color 0.4s, color 0.4s;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Day & Dark Mode Theming */
+body.day-mode {
+    background-color: var(--bg-day);
+    color: var(--text-color-day);
+    --card-bg: var(--card-bg-day);
+    --text-color: var(--text-color-day);
+    --heading-color: var(--heading-color-day);
+    --border-color: var(--border-color-day);
+    --accent-color: var(--accent-color-day);
+    --accent-color-light: var(--accent-color-light-day);
+}
+body.dark-mode {
+    background-color: var(--bg-dark);
+    color: var(--text-color-dark);
+    --card-bg: var(--card-bg-dark);
+    --text-color: var(--text-color-dark);
+    --heading-color: var(--heading-color-dark);
+    --border-color: var(--border-color-dark);
+    --accent-color: var(--accent-color-dark);
+    --accent-color-light: var(--accent-color-light-dark);
+}
+
+.homepage {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* --- 3. Utility Components (ইউটিলিটি কম্পোনেন্ট) --- */
+
+/* Preloader */
+#preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-day); z-index: 1001; display: flex; justify-content: center; align-items: center; }
+body.dark-mode #preloader { background: var(--bg-dark); }
+.loader { border: 8px solid rgba(0,0,0,0.1); border-top: 8px solid var(--accent-color); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* Dark Mode Button */
+.dark-mode-button { position: absolute; top: 20px; right: 0; background: var(--card-bg); border: 1px solid var(--border-color); width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2rem; color: var(--text-color); transition: all 0.3s; }
+.dark-mode-button:hover { transform: scale(1.1) rotate(15deg); background-color: var(--accent-color-light); }
+
+/* Notification Button & Badge */
+.notification-btn {
+    position: relative;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    margin-left: 12px; /* ডার্ক মোড বাটনের পাশে ফাঁকা রাখার জন্য */
+    cursor: pointer;
+    color: var(--text-color);
+    transition: color 0.2s;
+}
+.notification-btn:hover {
+    color: var(--accent-color);
+}
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #e74c3c;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    display: none;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Back to Top Button */
+#back-to-top { display: none; position: fixed; bottom: 20px; right: 20px; background: var(--accent-color); color: white; width: 50px; height: 50px; border-radius: 50%; text-decoration: none; text-align: center; line-height: 50px; font-size: 1.5rem; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: background-color 0.3s, transform 0.3s; }
+#back-to-top:hover { transform: translateY(-3px); }
+
+/* --- 4. Header & Navigation (হেডার ও নেভিগেশন) --- */
+
+.main-header { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px 0; position: relative; }
+.profile-pic { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 5px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.header-text h1 { font-size: 2.5rem; margin: 15px 0 5px; color: var(--heading-color); }
+.header-text p { font-size: 1.1rem; margin: 0; color: var(--text-color); opacity: 0.8; }
+
+.search-container { margin: 20px 0; position: relative; }
+.search-container i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
+#search-bar { width: 100%; padding: 12px 12px 12px 45px; font-size: 1rem; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--card-bg); color: var(--text-color); transition: all 0.3s; }
+#search-bar:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 3px var(--accent-color-light); }
+body.dark-mode #search-bar:focus { box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.3); }
+
+.nav-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin: 30px 0; }
+.nav-button { color: white; text-decoration: none; padding: 20px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; border: none; }
+.nav-button:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.nav-button i { font-size: 2rem; margin-bottom: 10px; }
+.nav-button span { font-weight: 600; font-size: 1rem; }
+
+/* Navigation Button Colors */
+.nav-button.color-dashboard { background: linear-gradient(45deg, #4e54c8, #8f94fb); }
+.nav-button.color-notes { background: linear-gradient(45deg, #16a085, #1abc9c); }
+.nav-button.color-quiz { background: linear-gradient(45deg, #d35400, #e67e22); }
+.nav-button.color-revision { background: linear-gradient(45deg, #c0392b, #e74c3c); }
+.nav-button.color-formulas { background: linear-gradient(45deg, #f39c12, #f1c40f); }
+.nav-button.color-leaderboard { background: linear-gradient(45deg, #8e44ad, #9b59b6); }
+
+
+/* --- 5. Main Content & Cards (মূল কন্টেন্ট ও কার্ড) --- */
+
+main { display: flex; flex-direction: column; gap: 30px; }
+.card { background: var(--card-bg); padding: 30px; border-radius: 15px; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.card h2 { font-size: 1.8rem; color: var(--heading-color); margin-top: 0; display: flex; align-items: center; gap: 10px; }
+.icon-title { color: var(--accent-color); }
+.card p { margin: 10px 0 20px; line-height: 1.6; }
+.link-container { display: flex; flex-wrap: wrap; gap: 10px; }
+.link-container a { background: var(--accent-color); color: white; text-decoration: none; padding: 10px 18px; border-radius: 25px; font-weight: 500; transition: background-color 0.2s, transform 0.2s; }
+.link-container a:hover { background: #2980b9; transform: translateY(-2px); }
+
+/* Action Button */
+.action-btn { background: var(--accent-color); color: white; border: none; padding: 10px 20px; border-radius: 25px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.action-btn.gray { background-color: #7f8c8d; }
+.action-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+
+/* --- 6. Page-Specific Sections (পেজ-ভিত্তিক সেকশন) --- */
+
+/* Study Timer Special Section */
+.special-feature {
+    display: flex; justify-content: space-between; align-items: center;
+    background: linear-gradient(135deg, var(--accent-color-day), #a855f7);
+    color: white; padding: 30px; border-radius: 20px; margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15); flex-wrap: wrap; gap: 20px;
+}
+body.dark-mode .special-feature { background: linear-gradient(135deg, #1e293b, #3730a3); }
+.special-feature .feature-content { flex: 1; min-width: 300px; }
+.special-feature h2 { color: white !important; border-bottom: none; margin-top: 0; padding-bottom: 0; }
+.special-feature .icon-title { color: white !important; }
+.special-feature p { color: rgba(255, 255, 255, 0.9); margin-bottom: 20px; font-size: 1.1rem; }
+.special-feature .timer-controls { display: flex; gap: 15px; }
+.special-feature .action-btn { background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: none; }
+.special-feature .action-btn:hover { background: rgba(255, 255, 255, 0.3); }
+.special-feature .action-btn.gray { background: rgba(0, 0, 0, 0.2); border-color: rgba(255, 255, 255, 0.3); }
+.timer-display-container { background: rgba(0,0,0,0.2); padding: 20px 30px; border-radius: 16px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); }
+.timer-display { font-size: 4rem; font-weight: bold; font-family: 'Courier New', monospace; color: white; text-shadow: 0 0 10px rgba(0,0,0,0.3); }
+
+/* Dashboard */
+.dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+.dashboard-item { text-align: center; padding: 1.5rem; background-color: var(--card-bg-day); border: 1px solid var(--border-color); border-radius: 12px; }
+body.dark-mode .dashboard-item { background-color: #2c2c2c; }
+.dashboard-item h3 { margin-top: 0; font-size: 1.2rem; color: var(--heading-color); }
+.progress-bar-container { width: 100%; background-color: #e0e0e0; border-radius: 30px; margin: 1rem 0; overflow: hidden; }
+body.dark-mode .progress-bar-container { background-color: #444; }
+.progress-bar { height: 20px; width: 0%; background-color: #27ae60; /* সবুজ রঙ */ border-radius: 30px; transition: width 1s ease-in-out; }
+#chapter-progress-text { font-weight: 600; color: var(--text-color); }
+.challenge-box { background-color: #fff; border: 2px dashed var(--accent-color); padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+body.dark-mode .challenge-box { background-color: #333; }
+.achievements-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 1rem; }
+.achievement-badge { display: flex; flex-direction: column; align-items: center; width: 80px; text-align: center; opacity: 0.4; filter: grayscale(100%); transition: all 0.4s; }
+.achievement-badge.unlocked { opacity: 1; filter: grayscale(0%); transform: scale(1.1); }
+.achievement-badge i { font-size: 2.5rem; color: #f1c40f; }
+.achievement-badge span { font-size: 0.8rem; font-weight: 600; margin-top: 5px; }
+
+/* Leaderboard Table */
+.leaderboard-container { margin-top: 1.5rem; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); }
+thead { background-color: var(--accent-color-light); }
+body.dark-mode thead { background-color: #2d3748; }
+td i { margin-right: 8px; }
+
+/* FAQ Section */
+.faq-container { margin-top: 1.5rem; }
+.faq-item { border-bottom: 1px solid var(--border-color); }
+.faq-question { width: 100%; background: none; border: none; text-align: left; padding: 1rem; font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--heading-color); }
+.faq-question i { transition: transform 0.3s; }
+.faq-item.active .faq-question i { transform: rotate(180deg); color: var(--accent-color); }
+.faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+.faq-answer p { padding: 0 1rem 1rem; margin: 0; }
+
+/* Video & Feedback */
+.video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin-top: 1.5rem; border-radius: 8px; }
+.video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+#feedback-form form { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; }
+#feedback-form input, #feedback-form textarea { padding: 10px; font-size: 1rem; border-radius: 5px; border: 1px solid var(--border-color); background-color: var(--card-bg); color: var(--text-color); }
+
+/* Notepad */
+.notepad-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.notepad-column h3 { margin-top: 0; color: var(--heading-color); }
+.notepad-column textarea { width: 100%; height: 150px; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; resize: vertical; background: var(--accent-color-light); color: var(--text-color); }
+body.dark-mode .notepad-column textarea { background: #2c2c2c; }
+.notepad-buttons { display: flex; gap: 10px; margin-top: 15px; }
+
+
+/* --- 7. Modals (মোডাল) --- */
+
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1001; display: none; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+.modal-overlay.active { display: flex; }
+.modal-content { background-color: var(--card-bg); padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 5px 20px rgba(0,0,0,0.3); text-align: center; }
+.modal-close-btn { position: absolute; top: 10px; right: 20px; background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-color); }
+.modal-content h2 { margin-top: 0; color: var(--heading-color); }
+.modal-content ul { list-style: none; padding: 0; text-align: left; }
+.modal-content li { padding: 8px 0; border-bottom: 1px dashed var(--border-color); }
+.modal-content li:last-child { border-bottom: none; }
+
+/* Break Time Modal Specifics */
+#break-modal .modal-content { transform: scale(0.7); opacity: 0; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease; }
+.modal-overlay.active #break-modal .modal-content { transform: scale(1); opacity: 1; }
+#break-modal .modal-icon { font-size: 4rem; display: block; margin-bottom: 15px; animation: bounce 2s infinite; }
+#break-modal h2 { color: var(--accent-color); }
+#break-modal .break-text { font-size: 1.2rem; color: var(--text-color); margin-bottom: 25px; }
+@keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-20px);} 60% {transform: translateY(-10px);} }
+
+
+/* --- 8. Footer (ফুটার) --- */
+
+footer { text-align: center; padding: 30px 0; margin-top: 30px; border-top: 1px solid var(--border-color); }
+.social-links a { margin: 0 10px; color: var(--text-color); font-size: 1.2rem; transition: color 0.3s, transform 0.3s; }
+.social-links a:hover { color: var(--accent-color); transform: translateY(-3px); }
+
+
+/* --- 9. Responsive Design (রেসপন্সিভ ডিজাইন) --- */
+
+@media (max-width: 768px) {
+    .special-feature { flex-direction: column; text-align: center; }
+    .special-feature .timer-controls { justify-content: center; }
+    .notepad-container { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+    body { padding: 15px; }
+    .header-text h1 { font-size: 2rem; }
+    .nav-grid { grid-template-columns: repeat(2, 1fr); }
+    .card { padding: 20px; }
+    .dark-mode-button { top: 10px; right: 10px; }
+}
