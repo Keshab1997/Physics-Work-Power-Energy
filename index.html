@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>কার্য, ক্ষমতা ও শক্তি - ড্যাশবোর্ড | কেশব সরকার</title>
+    <title>কার্য, ক্ষমতা ও শক্তি - ড্যাশবোর্ড | Study With Keshab</title>
     
     <!-- প্রধান CSS ফাইল -->
     <link rel="stylesheet" href="css/style.css">
@@ -13,8 +13,13 @@
     
     <!-- চার্ট ব্যবহারের জন্য Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- === নতুন: পেজ হাইড করার জন্য স্টাইল === -->
+    <style>
+      body.auth-loading { visibility: hidden; opacity: 0; }
+    </style>
 </head>
-<body class="day-mode homepage theme-blue">
+<body class="day-mode homepage theme-blue auth-loading">
 
     <div id="preloader">
         <div class="loader"></div>
@@ -29,35 +34,27 @@
     </div>
 
     <header class="main-header">
-        <!-- লোগো (ইস্টার এগ ট্রিগার) -->
         <img src="images/logo.jpg" alt="কার্য, ক্ষমতা ও শক্তি" class="profile-pic" id="logo-easter-egg">
-        
         <div class="header-text">
             <h1>অধ্যায়: কার্য, ক্ষমতা ও শক্তি</h1>
             <p>আপনার পড়াশোনার সেরা ডিজিটাল সঙ্গী</p>
         </div>
-        
-        <!-- ডার্ক মোড টগল বাটন -->
         <button id="dark-mode-toggle" class="dark-mode-button" title="দিন/রাত মোড পরিবর্তন করুন">
             <i class="fa-solid fa-moon"></i>
         </button>
-        <!-- Notification Bell Button (শুধু এখানে) -->
         <button id="show-notification-btn" class="notification-btn" title="নোটিফিকেশন দেখুন">
             <i class="fa-solid fa-bell"></i>
             <span id="notification-badge" class="notification-badge">1</span>
         </button>
     </header>
     
-    <!-- সার্চ বার -->
     <div class="search-container">
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" id="search-bar" placeholder="যেকোনো সেকশন খুঁজুন (যেমন: কুইজ, নোট, FAQ)...">
     </div>
 
-    <!-- === নতুন: অধ্যায় শনাক্ত করার জন্য একটি বিশেষ ট্যাগ === -->
     <div id="chapter-identifier" data-chapter-name="কার্য, ক্ষমতা ও শক্তি" style="display: none;"></div>
 
-    <!-- নতুন ডিজাইনের নেভিগেশন গ্রিড -->
     <nav class="nav-grid">
         <a href="#dashboard" class="nav-button color-dashboard"><i class="fa-solid fa-chart-line"></i><span>ড্যাশবোর্ড</span></a>
         <a href="#class-notes" class="nav-button color-notes"><i class="fa-solid fa-book-open"></i><span>ক্লাস নোট</span></a>
@@ -68,7 +65,6 @@
     </nav>
 
     <main>
-        <!-- স্টাডি টাইমার সেকশন (নতুন স্থান) -->
         <section class="card special-feature" id="study-timer">
             <div class="feature-content">
                 <h2><i class="fa-solid fa-clock icon-title"></i> স্টাডি টাইমার (পোমোডোরো)</h2>
@@ -84,37 +80,16 @@
             </div>
         </section>
 
-        <!-- Dashboard Section -->
         <section class="card" id="dashboard">
             <h2><i class="fa-solid fa-chart-line icon-title"></i> আমার ড্যাশবোর্ড</h2>
             <div class="dashboard-grid">
-                <div class="dashboard-item">
-                    <h3>অধ্যায়ের অগ্রগতি (কুইজ)</h3>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" id="chapter-progress-bar"></div>
-                    </div>
-                    <p id="chapter-progress-text">0% সম্পন্ন</p>
-                </div>
-                <div class="dashboard-item">
-                    <h3>কুইজ পারফরম্যান্স</h3>
-                    <canvas id="quiz-pie-chart"></canvas>
-                </div>
-                <div class="dashboard-item">
-                    <h3>দৈনিক চ্যালেঞ্জ</h3>
-                    <div id="daily-challenge" class="challenge-box">
-                        <p id="challenge-text">আজকের চ্যালেঞ্জ লোড হচ্ছে...</p>
-                    </div>
-                </div>
-                <div class="dashboard-item">
-                    <h3>আমার অ্যাচিভমেন্টস</h3>
-                    <div class="achievements-container" id="achievements-container">
-                        <!-- জাভাস্ক্রিপ্ট দিয়ে ব্যাজ লোড হবে -->
-                    </div>
-                </div>
+                <div class="dashboard-item"><h3>অধ্যায়ের অগ্রগতি (কুইজ)</h3><div class="progress-bar-container"><div class="progress-bar" id="chapter-progress-bar"></div></div><p id="chapter-progress-text">0% সম্পন্ন</p></div>
+                <div class="dashboard-item"><h3>কুইজ পারফরম্যান্স</h3><canvas id="quiz-pie-chart"></canvas></div>
+                <div class="dashboard-item"><h3>দৈনিক চ্যালেঞ্জ</h3><div id="daily-challenge" class="challenge-box"><p id="challenge-text">আজকের চ্যালেঞ্জ লোড হচ্ছে...</p></div></div>
+                <div class="dashboard-item"><h3>আমার অ্যাচিভমেন্টস</h3><div class="achievements-container" id="achievements-container"></div></div>
             </div>
         </section>
 
-        <!-- Class Notes Section (UPDATED FOR GOOGLE DRIVE PREVIEW) -->
         <section class="card" id="class-notes">
             <h2><i class="fa-solid fa-book-open icon-title"></i> ক্লাস নোট (PDF)</h2>
             <p>লেকচারের সাথে মিলিয়ে পড়ার জন্য ক্লাস নোটগুলো ডাউনলোড করুন।</p>
@@ -127,148 +102,46 @@
             </div>
         </section>
 
-        <!-- Quiz Section -->
         <section class="card" id="quiz-sets">
             <h2><i class="fa-solid fa-file-circle-question icon-title"></i> কুইজ সেট</h2>
             <p>নিজের প্রস্তুতি যাচাই করার জন্য ইন্টারেক্টিভ কুইজগুলোতে অংশ নিন।</p>
             <div class="link-container">
-                <a href="quiz/Qset1.html">📝 Quiz Set 1</a>
-                <a href="quiz/Qset2.html">📝 Quiz Set 2</a>
-                <a href="quiz/Qset3.html">📝 Quiz Set 3</a>
-                <a href="quiz/Qset4.html">📝 Quiz Set 4</a>
-                <a href="quiz/Qset5.html">📝 Quiz Set 5</a>
-                <a href="quiz/Qset6.html">📝 Quiz Set 6</a>
-                <a href="quiz/Qset7.html">📝 Quiz Set 7</a>
-                <a href="quiz/Qset8.html">📝 Quiz Set 8</a>
-                <a href="quiz/Qset9.html">📝 Quiz Set 9</a>
+                <a href="quiz/Qset1.html">📝 Quiz Set 1</a><a href="quiz/Qset2.html">📝 Quiz Set 2</a><a href="quiz/Qset3.html">📝 Quiz Set 3</a><a href="quiz/Qset4.html">📝 Quiz Set 4</a><a href="quiz/Qset5.html">📝 Quiz Set 5</a><a href="quiz/Qset6.html">📝 Quiz Set 6</a><a href="quiz/Qset7.html">📝 Quiz Set 7</a><a href="quiz/Qset8.html">📝 Quiz Set 8</a><a href="quiz/Qset9.html">📝 Quiz Set 9</a>
             </div>
         </section>
 
-        <!-- Revision Section -->
         <section class="card" id="revision-lectures">
             <h2><i class="fa-solid fa-star icon-title"></i> রিভিশন লেকচার</h2>
             <p>গুরুত্বপূর্ণ বিষয়গুলো দ্রুত ঝালিয়ে নেওয়ার জন্য বিশেষ রিভিশন পেজগুলো দেখুন।</p>
             <div class="link-container">
-                <a href="revision/class1.html">📘 Class 1</a>
-                <a href="revision/class2.html">📘 Class 2</a>
-                <a href="revision/class3.html">📘 Class 3</a>
-                <a href="revision/class4.html">📘 Class 4</a>
-                <a href="revision/class5.html">📘 Class 5</a>
-                <a href="revision/class6.html">📘 Class 6</a>
-                <a href="revision/class7.html">📘 Class 7</a>
+                <a href="revision/class1.html">📘 Class 1</a><a href="revision/class2.html">📘 Class 2</a><a href="revision/class3.html">📘 Class 3</a><a href="revision/class4.html">📘 Class 4</a><a href="revision/class5.html">📘 Class 5</a><a href="revision/class6.html">📘 Class 6</a><a href="revision/class7.html">📘 Class 7</a>
             </div>
         </section>
         
-        <!-- Leaderboard Section -->
         <section class="card" id="leaderboard">
             <h2><i class="fa-solid fa-trophy icon-title"></i> লিডারবোর্ড</h2>
             <p>প্রতিটি কুইজে আপনার সেরা স্কোর এখানে দেখানো হবে।</p>
-            <div class="leaderboard-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>নাম</th>
-                            <th>মোট স্কোর</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboard-body">
-                        <!-- জাভাস্ক্রিপ্ট দিয়ে স্কোর লোড হবে -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="notepad-buttons">
-                <button id="clear-leaderboard-btn" class="action-btn gray">লিডারবোর্ড মুছুন</button>
-            </div>
+            <div class="leaderboard-container"><table><thead><tr><th>#</th><th>নাম</th><th>মোট স্কোর</th></tr></thead><tbody id="leaderboard-body"></tbody></table></div>
+            <div class="notepad-buttons"><button id="clear-leaderboard-btn" class="action-btn gray">লিডারবোর্ড মুছুন</button></div>
         </section>
 
-        <!-- FAQ Section -->
         <section class="card" id="faq">
             <h2><i class="fa-solid fa-circle-question icon-title"></i> সাধারণ জিজ্ঞাসা (FAQ)</h2>
             <div class="faq-container">
-                <div class="faq-item">
-                    <button class="faq-question">কার্যহীন বল কী? <i class="fa-solid fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>যখন বল প্রয়োগ করা সত্ত্বেও বস্তুর সরণ শূন্য হয়, অথবা বল ও সরণের মধ্যবর্তী কোণ 90° হয়, তখন কৃতকার্য শূন্য হয়। এই অবস্থাকে কার্যহীন বল বলে। যেমন, দেওয়ালে ধাক্কা দেওয়া।</p></div>
-                </div>
-                <div class="faq-item">
-                    <button class="faq-question">1 অশ্ব ক্ষমতা (HP) মানে কী? <i class="fa-solid fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>1 HP বা হর্সপাওয়ার হলো ক্ষমতার একটি একক। এটি 746 ওয়াটের সমান। সাধারণত ইঞ্জিন বা মোটরের ক্ষমতা বোঝাতে এই একক ব্যবহার করা হয়।</p></div>
-                </div>
-                <div class="faq-item">
-                    <button class="faq-question">স্থিতিশক্তি ও গতিশক্তির মধ্যে পার্থক্য কী? <i class="fa-solid fa-chevron-down"></i></button>
-                    <div class="faq-answer"><p>কোনো বস্তুর গতির জন্য যে শক্তি অর্জিত হয়, তা গতিশক্তি (Ek = ½ mv²)। আর কোনো বস্তুর অবস্থান বা আকৃতির পরিবর্তনের জন্য তার মধ্যে যে শক্তি জমা থাকে, তা স্থিতিশক্তি (Ep = mgh)।</p></div>
-                </div>
+                <div class="faq-item"><button class="faq-question">কার্যহীন বল কী?<i class="fa-solid fa-chevron-down"></i></button><div class="faq-answer"><p>যখন বল প্রয়োগ করা সত্ত্বেও বস্তুর সরণ শূন্য হয়, অথবা বল ও সরণের মধ্যবর্তী কোণ 90° হয়, তখন কৃতকার্য শূন্য হয়। এই অবস্থাকে কার্যহীন বল বলে। যেমন, দেওয়ালে ধাক্কা দেওয়া।</p></div></div>
+                <div class="faq-item"><button class="faq-question">1 অশ্ব ক্ষমতা (HP) মানে কী?<i class="fa-solid fa-chevron-down"></i></button><div class="faq-answer"><p>1 HP বা হর্সপাওয়ার হলো ক্ষমতার একটি একক। এটি 746 ওয়াটের সমান। সাধারণত ইঞ্জিন বা মোটরের ক্ষমতা বোঝাতে এই একক ব্যবহার করা হয়।</p></div></div>
+                <div class="faq-item"><button class="faq-question">স্থিতিশক্তি ও গতিশক্তির মধ্যে পার্থক্য কী?<i class="fa-solid fa-chevron-down"></i></button><div class="faq-answer"><p>কোনো বস্তুর গতির জন্য যে শক্তি অর্জিত হয়, তা গতিশক্তি (Ek = ½ mv²)। আর কোনো বস্তুর অবস্থান বা আকৃতির পরিবর্তনের জন্য তার মধ্যে যে শক্তি জমা থাকে, তা স্থিতিশক্তি (Ep = mgh)।</p></div></div>
             </div>
         </section>
 
-        <!-- Video Lectures Section -->
-        <section class="card" id="video-lectures">
-            <h2><i class="fa-solid fa-video icon-title"></i> ভিডিও লেকচার</h2>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Placeholder Video" allowfullscreen></iframe>
-            </div>
-        </section>
-        
-        <!-- Feedback Form Section -->
-        <section class="card" id="feedback-form">
-            <h2><i class="fa-solid fa-paper-plane icon-title"></i> আপনার মতামত জানান</h2>
-            <p style="margin-bottom:18px; color:#2c3e50;">
-                📢 <strong>আপনার মতামত আমাদের জন্য গুরুত্বপূর্ণ!</strong><br>
-                সাইট ব্যবহার করতে কোনো সমস্যা হলে, নতুন ফিচার চাইলে, বা কেমন লাগলো—সব কিছু নিচের ফর্মে লিখে জানাতে পারেন।
-            </p>
-            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfq_fPzhJ2h2pSgZPlabLa9-p0BKcb8EYFVouN-CeUpkDPW1w/viewform?embedded=true" width="100%" height="700" frameborder="0" marginheight="0" marginwidth="0" style="background:#fff; border-radius:10px;">Loading…</iframe>
-        </section>
-
-        <!-- Notepad Section -->
-        <section class="card" id="notepad">
-            <h2><i class="fa-solid fa-clipboard-list icon-title"></i> আমার নোটপ্যাড</h2>
-            <p>আপনার পড়ার অগ্রগতি ট্র্যাক করতে এখানে নোট লিখে রাখুন।</p>
-            <div class="notepad-container">
-                <div class="notepad-column"><h3>✅ যা পড়েছি (Completed)</h3><textarea id="completed-notes" placeholder="এখানে লিখুন..."></textarea></div>
-                <div class="notepad-column"><h3>🎯 যা পড়তে হবে (To-Do)</h3><textarea id="todo-notes" placeholder="এখানে লিখুন..."></textarea></div>
-            </div>
-            <div class="notepad-buttons"><button id="save-notes-btn" class="action-btn">নোট সেভ করুন</button><button id="clear-notes-btn" class="action-btn gray">নোট মুছুন</button></div>
-        </section>
+        <section class="card" id="video-lectures"><h2><i class="fa-solid fa-video icon-title"></i> ভিডিও লেকচার</h2><div class="video-container"><iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Placeholder Video" allowfullscreen></iframe></div></section>
+        <section class="card" id="feedback-form"><h2><i class="fa-solid fa-paper-plane icon-title"></i> আপনার মতামত জানান</h2><p style="margin-bottom:18px; color:#2c3e50;">📢 <strong>আপনার মতামত আমাদের জন্য গুরুত্বপূর্ণ!</strong><br>সাইট ব্যবহার করতে কোনো সমস্যা হলে, নতুন ফিচার চাইলে, বা কেমন লাগলো—সব কিছু নিচের ফর্মে লিখে জানাতে পারেন。</p><iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfq_fPzhJ2h2pSgZPlabLa9-p0BKcb8EYFVouN-CeUpkDPW1w/viewform?embedded=true" width="100%" height="700" frameborder="0" marginheight="0" marginwidth="0" style="background:#fff; border-radius:10px;">Loading…</iframe></section>
+        <section class="card" id="notepad"><h2><i class="fa-solid fa-clipboard-list icon-title"></i> আমার নোটপ্যাড</h2><p>আপনার পড়ার অগ্রগতি ট্র্যাক করতে এখানে নোট লিখে রাখুন।</p><div class="notepad-container"><div class="notepad-column"><h3>✅ যা পড়েছি (Completed)</h3><textarea id="completed-notes" placeholder="এখানে লিখুন..."></textarea></div><div class="notepad-column"><h3>🎯 যা পড়তে হবে (To-Do)</h3><textarea id="todo-notes" placeholder="এখানে লিখুন..."></textarea></div></div><div class="notepad-buttons"><button id="save-notes-btn" class="action-btn">নোট সেভ করুন</button><button id="clear-notes-btn" class="action-btn gray">নোট মুছুন</button></div></section>
     </main>
     
-    <!-- Formula Sheet Modal -->
-    <div id="formula-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close-btn">&times;</button>
-            <h2>🌟 গুরুত্বপূর্ণ সূত্র তালিকা</h2>
-            <ul>
-                <li>🏋️‍♂️ <strong>কার্য (W):</strong> W = F × s × cosθ</li>
-                <li>⏱️ <strong>ক্ষমতা (P):</strong> P = W / t</li>
-                <li>🚀 <strong>গতিশক্তি (E<sub>k</sub>):</strong> E<sub>k</sub> = ½ × m × v²</li>
-                <li>🏔️ <strong>স্থিতিশক্তি (E<sub>p</sub>):</strong> E<sub>p</sub> = m × g × h</li>
-                <li>⚡ <strong>যান্ত্রিক শক্তি:</strong> যান্ত্রিক শক্তি = বিভব শক্তি + গতিশক্তি</li>
-                <li>🎯 <strong>কার্যদক্ষতা (%):</strong> কার্যদক্ষতা = (আউটপুট শক্তি / ইনপুট শক্তি) × 100</li>
-                <li>🔄 <strong>কার্য-শক্তি উপপাদ্য:</strong> W = ΔE<sub>k</sub></li>
-                <li>🐎 <strong>1 অশ্ব ক্ষমতা (HP):</strong> 1 HP = 746 Watt</li>
-                <li>🔋 <strong>1 কিলোওয়াট-ঘণ্টা (kWh):</strong> 1 kWh = 3.6 × 10⁶ Joule</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Notification Modal (শুধু একবার, body-র নিচে) -->
-    <div id="notification-modal" class="modal-overlay">
-        <div class="modal-content text-center">
-            <span class="modal-icon">🔔</span>
-            <h2>নতুন নোটিফিকেশন</h2>
-            <ul id="notification-list"></ul>
-            <button id="close-notification-modal" class="action-btn">ঠিক আছে</button>
-        </div>
-    </div>
-
-    <!-- Break Time Modal (NEW) -->
-    <div id="break-modal" class="modal-overlay">
-        <div class="modal-content text-center">
-            <span class="modal-icon">🎉</span>
-            <h2>বিরতির সময়!</h2>
-            <p id="break-message" class="break-text">দারুণ কাজ! এখন একটু বিশ্রাম নাও।</p>
-            <button id="close-break-modal" class="action-btn">ঠিক আছে</button>
-        </div>
-    </div>
+    <div id="formula-modal" class="modal-overlay"><div class="modal-content"><button class="modal-close-btn">&times;</button><h2>🌟 গুরুত্বপূর্ণ সূত্র তালিকা</h2><ul><li>🏋️‍♂️ <strong>কার্য (W):</strong> W = F × s × cosθ</li><li>⏱️ <strong>ক্ষমতা (P):</strong> P = W / t</li><li>🚀 <strong>গতিশক্তি (E<sub>k</sub>):</strong> E<sub>k</sub> = ½ × m × v²</li><li>🏔️ <strong>স্থিতিশক্তি (E<sub>p</sub>):</strong> E<sub>p</sub> = m × g × h</li><li>⚡ <strong>যান্ত্রিক শক্তি:</strong> যান্ত্রিক শক্তি = বিভব শক্তি + গতিশক্তি</li><li>🎯 <strong>কার্যদক্ষতা (%):</strong> কার্যদক্ষতা = (আউটপুট শক্তি / ইনপুট শক্তি) × 100</li><li>🔄 <strong>কার্য-শক্তি উপপাদ্য:</strong> W = ΔE<sub>k</sub></li><li>🐎 <strong>1 অশ্ব ক্ষমতা (HP):</strong> 1 HP = 746 Watt</li><li>🔋 <strong>1 কিলোওয়াট-ঘণ্টা (kWh):</strong> 1 kWh = 3.6 × 10⁶ Joule</li></ul></div></div>
+    <div id="notification-modal" class="modal-overlay"><div class="modal-content text-center"><span class="modal-icon">🔔</span><h2>নতুন নোটিফিকেশন</h2><ul id="notification-list"></ul><button id="close-notification-modal" class="action-btn">ঠিক আছে</button></div></div>
+    <div id="break-modal" class="modal-overlay"><div class="modal-content text-center"><span class="modal-icon">🎉</span><h2>বিরতির সময়!</h2><p id="break-message" class="break-text">দারুণ কাজ! এখন একটু বিশ্রাম নাও।</p><button id="close-break-modal" class="action-btn">ঠিক আছে</button></div></div>
     
     <a id="back-to-top" href="#"><i class="fas fa-arrow-up"></i></a>
     
@@ -281,15 +154,41 @@
         </div>
     </footer>
 
-    <!-- === Firebase Script Section (NEW) === -->
+    <!-- === Firebase এবং পেজ প্রটেকশন স্ক্রিপ্ট শুরু === -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <!-- আপনার কনফিগারেশন ফাইল -->
     <script src="js/firebase-config.js"></script>
-    <!-- === End of Firebase Script Section === -->
 
-    <!-- প্রধান জাভাস্ক্রিপ্ট ফাইল -->
+    <script>
+        (function() {
+            const interval = setInterval(() => {
+                if (typeof firebase !== 'undefined' && firebase.auth) {
+                    clearInterval(interval);
+                    const auth = firebase.auth();
+                    
+                    auth.onAuthStateChanged(user => {
+                        if (user) {
+                            document.body.classList.remove('auth-loading');
+                        } else {
+                            window.location.href = 'https://keshab1997.github.io/Study-With-Keshab/login.html'; 
+                        }
+                    });
+                }
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                if (!window.firebase || !firebase.auth) {
+                    window.location.href = 'https://keshab1997.github.io/Study-With-Keshab/login.html'; 
+                }
+            }, 5000);
+        })();
+    </script>
+    <!-- === Firebase এবং পেজ প্রটেকশন স্ক্রিপ্ট শেষ === -->
+
+    <!-- প্রধান জাভাস্ক্রিপ্ট ফাইল (Firebase এর পরে লোড হবে) -->
     <script src="js/script.js"></script>
     <!-- Notification JS ফাইল (script.js-এর পরে) -->
     <script src="js/notification-data.js"></script>
