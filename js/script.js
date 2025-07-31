@@ -128,40 +128,79 @@ document.addEventListener('DOMContentLoaded', () => {
         challengeText.textContent = challenges[dayOfWeek];
     }
     
-    // --- Leaderboard ---
+    // =======================================================
+    // --- Leaderboard Section (THIS IS THE UPDATED PART) ---
+    // =======================================================
     const leaderboardBody = document.getElementById('leaderboard-body');
     const clearLeaderboardBtn = document.getElementById('clear-leaderboard-btn');
-    const loadLeaderboard = () => {
+    
+    // NEW FIREBASE LEADERBOARD FUNCTION
+    const loadLeaderboard = async () => {
         if (!leaderboardBody) return;
-        leaderboardBody.innerHTML = '';
-        const comprehensiveLeaderboard = JSON.parse(localStorage.getItem('comprehensiveLeaderboard') || '{}');
-        const sortedLeaderboard = Object.entries(comprehensiveLeaderboard)
-            .map(([name, data]) => ({ name, ...data }))
-            .sort((a, b) => b.totalScore - a.totalScore)
-            .slice(0, 10);
-        if (sortedLeaderboard.length === 0) {
-            leaderboardBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">লিডারবোর্ড এখনো খালি!</td></tr>'; return;
+
+        const chapterIdentifier = document.getElementById('chapter-identifier');
+        if (!chapterIdentifier) {
+            console.error("Chapter identifier div not found. Cannot load chapter-specific leaderboard.");
+            leaderboardBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">অধ্যায় শনাক্ত করা যায়নি।</td></tr>';
+            return;
         }
-        sortedLeaderboard.forEach((user, index) => {
-            const row = document.createElement('tr');
-            let icon = '';
-            if (index === 0) icon = '<i class="fa-solid fa-trophy" style="color: #ffd700;"></i> ';
-            else if (index === 1) icon = '<i class="fa-solid fa-medal" style="color: #c0c0c0;"></i> ';
-            else if (index === 2) icon = '<i class="fa-solid fa-medal" style="color: #cd7f32;"></i> ';
-            row.innerHTML = `<td>${icon}${index + 1}</td><td>${user.name}</td><td>${user.totalScore}</td>`;
-            leaderboardBody.appendChild(row);
-        });
+        const chapterName = chapterIdentifier.getAttribute('data-chapter-name');
+
+        leaderboardBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">লিডারবোর্ড লোড হচ্ছে...</td></tr>';
+
+        try {
+            const snapshot = await firebase.firestore().collection('quiz_scores')
+                .where('quizName', '>=', chapterName)
+                .where('quizName', '<=', chapterName + '\uf8ff')
+                .get();
+
+            if (snapshot.empty) {
+                leaderboardBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">এই অধ্যায়ের জন্য কোনো স্কোর পাওয়া যায়নি।</td></tr>';
+                return;
+            }
+
+            const userScores = {};
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const userName = data.email; 
+                if (!userScores[userName]) {
+                    userScores[userName] = 0;
+                }
+                userScores[userName] += data.score;
+            });
+
+            const sortedLeaderboard = Object.entries(userScores)
+                .sort(([, scoreA], [, scoreB]) => scoreB - scoreA)
+                .slice(0, 10); 
+
+            leaderboardBody.innerHTML = ''; 
+
+            sortedLeaderboard.forEach(([name, totalScore], index) => {
+                const row = document.createElement('tr');
+                let icon = '';
+                if (index === 0) icon = '<i class="fa-solid fa-trophy" style="color: #ffd700;"></i> ';
+                else if (index === 1) icon = '<i class="fa-solid fa-medal" style="color: #c0c0c0;"></i> ';
+                else if (index === 2) icon = '<i class="fa-solid fa-medal" style="color: #cd7f32;"></i> ';
+                row.innerHTML = `<td>${icon}${index + 1}</td><td>${name}</td><td>${totalScore}</td>`;
+                leaderboardBody.appendChild(row);
+            });
+
+        } catch (error) {
+            console.error("Error fetching leaderboard data:", error);
+            leaderboardBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">লিডারবোর্ড লোড করা যায়নি। (কনসোল চেক করুন)</td></tr>';
+        }
     };
+    
+    // Keeping the 'clearLeaderboardBtn' logic, but making it clear it won't affect the new leaderboard.
     if (clearLeaderboardBtn) {
         clearLeaderboardBtn.addEventListener('click', () => {
-            if (confirm('আপনি কি লিডারবোর্ডের সমস্ত ডেটা মুছে ফেলতে চান?')) {
-                localStorage.removeItem('comprehensiveLeaderboard');
-                loadLeaderboard(); updateDashboard(); alert('লিডারবোর্ড সফলভাবে পরিষ্কার করা হয়েছে।');
-            }
+            alert("এই লিডারবোর্ডটি এখন সরাসরি ডেটাবেস থেকে আসছে এবং এটি ব্যবহারকারীর ব্রাউজার থেকে মোছা যাবে না।");
+            // Optionally, you can hide or remove the button.
+            // clearLeaderboardBtn.style.display = 'none';
         });
     }
 
-    // --- FAQ, Modal, Notepad, Back-to-Top ---
+    // --- FAQ, Modal, Notepad, Back-to-Top (UNCHANGED) ---
     const faqItems = document.querySelectorAll('.faq-question');
     faqItems.forEach(item => { item.addEventListener('click', () => { /* ... */ }); });
 
@@ -195,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (backToTopBtn) { window.onscroll = () => { /* ... */ }; }
 
     // ===================================================================
-    // --- Study Timer with State Persistence (UPDATED SECTION) ---
+    // --- Study Timer with State Persistence (UNCHANGED) ---
     // ===================================================================
     const timerDisplay = document.getElementById('timer-display');
     const startBtn = document.getElementById('start-timer-btn');
@@ -308,6 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initial Load of other components ---
     if (typeof loadNotes === 'function') loadNotes();
-    if (typeof loadLeaderboard === 'function') loadLeaderboard();
+    if (typeof loadLeaderboard === 'function') loadLeaderboard(); // This will now call the new Firebase function
     if (typeof updateDashboard === 'function') updateDashboard();
 });
