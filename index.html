@@ -54,6 +54,9 @@
         <input type="text" id="search-bar" placeholder="যেকোনো সেকশন খুঁজুন (যেমন: কুইজ, নোট, FAQ)...">
     </div>
 
+    <!-- === নতুন: অধ্যায় শনাক্ত করার জন্য একটি বিশেষ ট্যাগ === -->
+    <div id="chapter-identifier" data-chapter-name="কার্য, ক্ষমতা ও শক্তি" style="display: none;"></div>
+
     <!-- নতুন ডিজাইনের নেভিগেশন গ্রিড -->
     <nav class="nav-grid">
         <a href="#dashboard" class="nav-button color-dashboard"><i class="fa-solid fa-chart-line"></i><span>ড্যাশবোর্ড</span></a>
@@ -207,14 +210,14 @@
         </section>
         
         <!-- Feedback Form Section -->
-<section class="card" id="feedback-form">
-    <h2><i class="fa-solid fa-paper-plane icon-title"></i> আপনার মতামত জানান</h2>
-    <p style="margin-bottom:18px; color:#2c3e50;">
-        📢 <strong>আপনার মতামত আমাদের জন্য গুরুত্বপূর্ণ!</strong><br>
-        সাইট ব্যবহার করতে কোনো সমস্যা হলে, নতুন ফিচার চাইলে, বা কেমন লাগলো—সব কিছু নিচের ফর্মে লিখে জানাতে পারেন।
-    </p>
-    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfq_fPzhJ2h2pSgZPlabLa9-p0BKcb8EYFVouN-CeUpkDPW1w/viewform?embedded=true" width="100%" height="700" frameborder="0" marginheight="0" marginwidth="0" style="background:#fff; border-radius:10px;">Loading…</iframe>
-</section>
+        <section class="card" id="feedback-form">
+            <h2><i class="fa-solid fa-paper-plane icon-title"></i> আপনার মতামত জানান</h2>
+            <p style="margin-bottom:18px; color:#2c3e50;">
+                📢 <strong>আপনার মতামত আমাদের জন্য গুরুত্বপূর্ণ!</strong><br>
+                সাইট ব্যবহার করতে কোনো সমস্যা হলে, নতুন ফিচার চাইলে, বা কেমন লাগলো—সব কিছু নিচের ফর্মে লিখে জানাতে পারেন।
+            </p>
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfq_fPzhJ2h2pSgZPlabLa9-p0BKcb8EYFVouN-CeUpkDPW1w/viewform?embedded=true" width="100%" height="700" frameborder="0" marginheight="0" marginwidth="0" style="background:#fff; border-radius:10px;">Loading…</iframe>
+        </section>
 
         <!-- Notepad Section -->
         <section class="card" id="notepad">
@@ -278,10 +281,18 @@
         </div>
     </footer>
 
+    <!-- === Firebase Script Section (NEW) === -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <!-- আপনার কনফিগারেশন ফাইল -->
+    <script src="js/firebase-config.js"></script>
+    <!-- === End of Firebase Script Section === -->
+
     <!-- প্রধান জাভাস্ক্রিপ্ট ফাইল -->
     <script src="js/script.js"></script>
     <!-- Notification JS ফাইল (script.js-এর পরে) -->
-	<script src="js/notification-data.js"></script>
+    <script src="js/notification-data.js"></script>
     <script src="js/notification.js"></script>
 </body>
 </html>
