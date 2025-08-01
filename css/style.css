@@ -266,3 +266,21 @@ footer { text-align: center; padding: 30px 0; margin-top: 30px; border-top: 1px 
     .card { padding: 20px; }
     .dark-mode-button { top: 10px; right: 10px; }
 }
+/* =================================
+   নতুন: হোম বাটনের জন্য স্টাইল
+==================================== */
+.nav-button.color-home {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* সুন্দর কমলা গ্রেডিয়েন্ট */
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(255, 126, 95, 0.4);
+}
+
+.nav-button.color-home:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 126, 95, 0.5);
+}
+
+/* হোম বাটনের আইকনের জন্য একটি নির্দিষ্ট রঙ (ঐচ্ছিক) */
+.nav-button.color-home i {
+    color: #fff;
+}
