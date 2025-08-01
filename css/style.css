@@ -284,8 +284,6 @@ footer { text-align: center; padding: 30px 0; margin-top: 30px; border-top: 1px 
 .nav-button.color-home i {
     color: #fff;
 }
-/* style.css */
-
 /* লিডারবোর্ডে ব্যবহারকারীর ছবি ও নামের জন্য স্টাইল */
 .leaderboard-container .user-info {
     display: flex;
@@ -298,21 +296,4 @@ footer { text-align: center; padding: 30px 0; margin-top: 30px; border-top: 1px 
     height: 30px;
     border-radius: 50%;
     object-fit: cover;
-}
-
-/* লিডারবোর্ডের বিস্তারিত স্কোরের জন্য স্টাইল */
-.detailed-scores-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    font-size: 0.9em;
-    color: #555;
-}
-
-.dark-mode .detailed-scores-list {
-    color: #bbb;
-}
-
-.detailed-scores-list li {
-    margin-bottom: 2px;
 }
