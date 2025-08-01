@@ -6,14 +6,17 @@
     <title>কুইজ সেট ১ - কার্য, ক্ষমতা ও শক্তি</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="css/quiz_style.css"> <!-- External common styles -->
+    
+    <!-- পাথটি এখানে ঠিক করা হয়েছে -->
+    <link rel="stylesheet" href="../css/quiz_style.css">
 
     <!-- === Firebase Script Section === -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <!-- আপনার কনফিগারেশন ফাইল (সঠিক পথসহ) -->
-    <script src="js/firebase-config.js"></script>
+    
+    <!-- পাথটি এখানে ঠিক করা হয়েছে -->
+    <script src="../js/firebase-config.js"></script>
     <!-- === End of Firebase Script Section === -->
 
 </head>
@@ -36,11 +39,16 @@
         </div>
     </main>
     <script>
+        // === কুইজ সেটের ডেটা (এখানে নতুন প্রপার্টি যোগ করা হয়েছে) ===
         const quizSet = {
-            // === পরিবর্তন এখানে ===
-            // অ্যাডমিন ড্যাশবোর্ডে শনাক্ত করার জন্য একটি ইউনিক আইডি যোগ করা হয়েছে।
+            // নতুন Firebase সিস্টেমের জন্য এই দুটি প্রপার্টি জরুরি
+            chapterName: "কার্য, ক্ষমতা ও শক্তি", 
+            setName: "Set 1",                  
+
+            // পুরোনো সিস্টেমের জন্য এই প্রপার্টিগুলো রাখা হলো
             id: "physics_work_energy_set1", 
             name: "কার্য, ক্ষমতা ও শক্তি - Set 1 (প্রশ্ন ১-১০)",
+            
             questions: [
                 {
                     question: "যদি বল (Force) শূন্য হয়, তাহলে কৃত কার্য (work) কত হবে? *(RRB GROUP-D 31.10.2018)*",
@@ -105,8 +113,8 @@
             ]
         };
     </script>
-    <!-- === পরিবর্তন এখানে === -->
-    <!-- আপনার কুইজ স্ক্রিপ্টের সঠিক পথ নিশ্চিত করা হয়েছে -->
-    <script src="js/quiz_script.js"></script>
+    
+    <!-- কুইজ স্ক্রিপ্টের পাথটিও এখানে ঠিক করা হয়েছে -->
+    <script src="../js/quiz_script.js"></script>
 </body>
 </html>

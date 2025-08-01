@@ -6,13 +6,12 @@
     <title>কুইজ সেট ৯ - কার্য, ক্ষমতা ও শক্তি</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="css/quiz_style.css">
+    <link rel="stylesheet" href="../css/quiz_style.css">
 
-    <!-- === Firebase Script Section (NEW) === -->
+    <!-- === Firebase Script Section === -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <!-- আপনার কনফিগারেশন ফাইলের সঠিক পথসহ -->
     <script src="../js/firebase-config.js"></script>
     <!-- === End of Firebase Script Section === -->
 
@@ -37,30 +36,16 @@
     </main>
     <script>
         const quizSet = {
+            chapterName: "কার্য, ক্ষমতা ও শক্তি",
+            setName: "Set 9",
             name: "কার্য, ক্ষমতা ও শক্তি - Set 9 (প্রশ্ন ৮১-৮৩)",
             questions: [
-                {
-                    question: "গতিশক্তি পরিবর্তনের হার کিসের সমান? *(Railway Group D 2018)*",
-                    options: ["ক্ষমতা", "কার্য", "বল", "ভরবেগ"],
-                    answer: 0,
-                    explanation: "ক্ষমতা হলো শক্তি ব্যয়ের হার। তাই গতিশক্তি পরিবর্তনের হারও ক্ষমতা নির্দেশ করে।"
-                },
-                {
-                    question: "উচ্চতা দ্বিগুণ হলে স্থিতিশক্তি— *(SSC MTS 2021)*",
-                    options: ["দ্বিগুণ হয়", "অর্ধেক হয়", "চারগুণ হয়", "একই থাকে"],
-                    answer: 0,
-                    explanation: "স্থিতিশক্তি (Ep = mgh) উচ্চতার (h) সমানুপাতিক।"
-                },
-                {
-                    question: "অবাধ পতনের সময় মোট যান্ত্রিক শক্তি— *(IBPS Clerk 2020)*",
-                    options: ["ধ্রুবক থাকে", "বৃদ্ধি পায়", "হ্রাস পায়", "শূন্য হয়"],
-                    answer: 0,
-                    explanation: "শক্তির সংরক্ষণ সূত্র অনুযায়ী, অবাধে পতনশীল বস্তুর মোট যান্ত্রিক শক্তি সর্বদা ধ্রুবক থাকে।"
-                }
+                { question: "গতিশক্তি পরিবর্তনের হার کিসের সমান? *(Railway Group D 2018)*", options: ["ক্ষমতা", "কার্য", "বল", "ভরবেগ"], answer: 0, explanation: "ক্ষমতা হলো শক্তি ব্যয়ের হার। তাই গতিশক্তি পরিবর্তনের হারও ক্ষমতা নির্দেশ করে।" },
+                { question: "উচ্চতা দ্বিগুণ হলে স্থিতিশক্তি— *(SSC MTS 2021)*", options: ["দ্বিগুণ হয়", "অর্ধেক হয়", "চারগুণ হয়", "একই থাকে"], answer: 0, explanation: "স্থিতিশক্তি (Ep = mgh) উচ্চতার (h) সমানুপাতিক।" },
+                { question: "অবাধ পতনের সময় মোট যান্ত্রিক শক্তি— *(IBPS Clerk 2020)*", options: ["ধ্রুবক থাকে", "বৃদ্ধি পায়", "হ্রাস পায়", "শূন্য হয়"], answer: 0, explanation: "শক্তির সংরক্ষণ সূত্র অনুযায়ী, অবাধে পতনশীল বস্তুর মোট যান্ত্রিক শক্তি সর্বদা ধ্রুবক থাকে।" }
             ]
         };
     </script>
-        <script src="js/quiz_script.js"></script>
-
+    <script src="../js/quiz_script.js"></script>
 </body>
 </html>
