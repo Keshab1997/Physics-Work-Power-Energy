@@ -149,8 +149,13 @@ function nextQuestion() {
 function showFinalResult() {
   clearInterval(timerInterval);
   
-  // This will now trigger the universal score saving function
-  saveScoreToFirebase(correctCount, quizSet.questions.length);
+  // ===================================================================
+  // === গুরুত্বপূর্ণ পরিবর্তন: কুইজ শেষ হলেই ফলাফল Firestore-এ সেভ হবে ===
+  // ===================================================================
+  // এখানে quizSet.id এবং quizSet.name ব্যবহার করা হয়েছে।
+  // আপনার প্রশ্ন সেট অবজেক্টে এই দুটি প্রপার্টি যোগ করতে হবে।
+  // যেমন: const quizSet = { id: 'physics_ch1', name: 'ভৌত রাশি ও পরিমাপ', questions: [...] };
+  saveQuizResultToFirestore(quizSet.id, quizSet.name, correctCount, quizSet.questions.length);
 
   const container = document.getElementById("quiz-container");
   container.innerHTML = `
@@ -193,7 +198,7 @@ function showReview() {
 // ===============================================
 // --- Advanced Leaderboard Section (localStorage based) ---
 // ===============================================
-
+// এই অংশটি যেমন আছে তেমনই রাখা হলো।
 function saveScore() {
     let name = prompt("লিডারবোর্ডে যোগ করার জন্য আপনার নাম দিন:", localStorage.getItem("quizUserName") || "");
     if (name && name.trim() !== "") {
@@ -259,39 +264,49 @@ function resetLeaderboard() {
 }
 
 // ===============================================
-// --- UPDATED Firebase Score Saving Section (For All Users) ---
+// --- UPDATED Firebase Score Saving Section ---
 // ===============================================
 
-async function saveScoreToFirebase(finalScore, totalQuestions) {
-    // Check if Firebase is initialized.
-    if (typeof firebase === 'undefined') {
-        console.log("Firebase is not available on this page.");
+/**
+ * এই ফাংশনটি কুইজের ফলাফল Firestore-এর 'quiz_attempts' কালেকশনে সেভ করে।
+ * @param {string} quizId - কুইজের একটি ইউনিক আইডি (যেমন: 'physics_ch1')
+ * @param {string} quizTitle - কুইজের সম্পূর্ণ নাম (যেমন: 'পদার্থবিদ্যা: ভৌত রাশি ও পরিমাপ')
+ * @param {number} score - ব্যবহারকারীর প্রাপ্ত নম্বর
+ * @param {number} totalQuestions - কুইজের মোট প্রশ্ন সংখ্যা
+ */
+function saveQuizResultToFirestore(quizId, quizTitle, score, totalQuestions) {
+    if (typeof firebase === 'undefined' || typeof firebase.auth === 'undefined' || typeof firebase.firestore === 'undefined') {
+        console.warn("Firebase is not fully initialized. Score will not be saved.");
         return;
     }
-    
-    try {
-        const loggedInUser = firebase.auth().currentUser;
 
-        if (loggedInUser) {
-            // ইউজার লগইন থাকলে UID ও ইমেইল অটো-ফেচ হবে
-            await firebase.firestore().collection("quiz_scores").add({
-                userId: loggedInUser.uid,         // <-- UID
-                email: loggedInUser.email,        // <-- ইমেইল (ভবিষ্যতে দরকার হতে পারে)
-                score: finalScore,
-                totalQuestions: totalQuestions,
-                quizName: typeof quizSet !== "undefined" ? quizSet.name : "Unknown Quiz",
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    const user = firebase.auth().currentUser;
+
+    if (user) {
+        const db = firebase.firestore();
+        
+        const attemptData = {
+            userId: user.uid,
+            quizId: quizId,
+            quizTitle: quizTitle,
+            score: score,
+            totalQuestions: totalQuestions,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp() // বর্তমান সময়
+        };
+
+        // 'quiz_attempts' কালেকশনে ডেটা যোগ করা
+        db.collection('quiz_attempts').add(attemptData)
+            .then(() => {
+                console.log('কুইজের ফলাফল সফলভাবে Firestore-এ সেভ হয়েছে!');
+            })
+            .catch(error => {
+                console.error('Firestore-এ ফলাফল সেভ করতে সমস্যা হয়েছে: ', error);
             });
-            alert("আপনার স্কোর সফলভাবে যোগ হয়েছে!");
-        } else {
-            // ইউজার লগইন না থাকলে স্কোর সেভ হবে না (বা চাইলে নাম চেয়ে গেস্ট হিসেবেও রাখতে পারো)
-            alert("স্কোর সেভ করতে হলে আপনাকে লগইন করতে হবে!");
-        }
-    } catch (error) {
-        console.error("Firebase: Error saving score:", error);
-        alert("দুঃখিত, স্কোর সেভ করার সময় সমস্যা হয়েছে।");
+    } else {
+        console.log('ফলাফল সেভ করার জন্য ব্যবহারকারীকে লগইন করতে হবে। এই মেসেজটি দেখা উচিত নয় কারণ পেজ লোডে লগইন চেক করা হয়েছে।');
     }
 }
+
 
 // ===============================================
 // --- Keyboard Navigation Section ---
