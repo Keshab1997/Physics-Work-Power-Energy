@@ -1,17 +1,55 @@
 // ===============================================
-// --- Day/Night Mode Toggle & Auth Section ---
+// --- App Initialization & Global Variables ---
 // ===============================================
 
-firebase.auth().onAuthStateChanged(function(user) {
-  if (!user) {
-    alert("এই কুইজ দিতে হলে আপনাকে লগইন করতে হবে!");
-    window.location.href = "https://keshab1997.github.io/Study-With-Keshab/login.html";
-  }
+// Global variables for quiz state
+let currentQuestionIndex = 0;
+let selectedAnswer = null;
+let correctCount = 0;
+let wrongCount = 0;
+let userAnswers = [];
+let shuffledOptionsPerQuestion = [];
+let timerInterval;
+let currentCorrectAnswerIndex; // FIXED: For keyboard navigation
+
+// Sound effects
+const correctSound = new Audio("../sounds/correct.mp3");
+const wrongSound = new Audio("../sounds/wrong.mp3");
+
+// Main entry point when the page is loaded
+document.addEventListener("DOMContentLoaded", () => {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            // If user is logged in, initialize the quiz
+            initializeApp();
+        } else {
+            // If not logged in, show alert and redirect
+            alert("এই কুইজ দিতে হলে আপনাকে লগইন করতে হবে!");
+            window.location.href = "https://keshab1997.github.io/Study-With-Keshab/login.html";
+        }
+    });
 });
+
+function initializeApp() {
+    setupModeToggle();
+    if (typeof quizSet !== "undefined" && quizSet.questions && quizSet.questions.length > 0) {
+        document.getElementById("quiz-title").textContent = quizSet.name;
+        shuffleArray(quizSet.questions);
+        showQuestion();
+        setupKeyboard(); // Keyboard setup is now inside authenticated block
+    } else {
+        document.getElementById("quiz-container").innerHTML = "<p class='text-red-600 font-bold text-center'>দুঃখিত, প্রশ্ন সেট লোড করা যায়নি।</p>";
+    }
+}
+
+// ===============================================
+// --- UI Setup Section (Dark Mode) ---
+// ===============================================
 
 function setupModeToggle() {
     const modeToggleBtn = document.getElementById("mode-toggle");
     const body = document.body;
+    
     function applyMode(mode) {
         if (mode === 'dark-mode') {
             body.classList.add('dark-mode'); body.classList.remove('day-mode');
@@ -21,8 +59,10 @@ function setupModeToggle() {
             if (modeToggleBtn) modeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
         }
     }
-    const savedMode = localStorage.getItem('quizAppMode'); // শুধুমাত্র থিম মোড সেভ রাখা হলো
+
+    const savedMode = localStorage.getItem('quizAppMode');
     applyMode(savedMode || 'day-mode');
+
     if (modeToggleBtn) {
         modeToggleBtn.addEventListener("click", () => {
             const newMode = body.classList.contains('day-mode') ? 'dark-mode' : 'day-mode';
@@ -35,13 +75,25 @@ function setupModeToggle() {
 // ===============================================
 // --- Core Quiz Logic Section ---
 // ===============================================
-let currentQuestionIndex = 0, selectedAnswer = null, correctCount = 0, wrongCount = 0;
-let correctSound = new Audio("../sounds/correct.mp3"), wrongSound = new Audio("../sounds/wrong.mp3");
-let userAnswers = [], shuffledOptionsPerQuestion = [];
-let timerInterval;
 
-function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } }
-function startTimer() { let seconds = 0; let minutes = 0; clearInterval(timerInterval); function updateTimer() { seconds++; if (seconds === 60) { seconds = 0; minutes++; } const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`; document.getElementById("timer").textContent = formattedTime; } document.getElementById("timer").textContent = "00:00"; timerInterval = setInterval(updateTimer, 1000); }
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function startTimer() {
+    let seconds = 0;
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        seconds++;
+        const minutes = Math.floor(seconds / 60);
+        const remainderSeconds = seconds % 60;
+        document.getElementById("timer").textContent = 
+            `${String(minutes).padStart(2, '0')}:${String(remainderSeconds).padStart(2, '0')}`;
+    }, 1000);
+}
 
 function showQuestion() {
     selectedAnswer = null;
@@ -51,13 +103,16 @@ function showQuestion() {
     let shuffledOptions = [...q.options];
     shuffleArray(shuffledOptions);
     shuffledOptionsPerQuestion[currentQuestionIndex] = shuffledOptions;
-    const correctAnswerIndex = shuffledOptions.indexOf(q.options[q.answer]);
+    
+    // FIXED: Store the correct answer index for keyboard navigation
+    currentCorrectAnswerIndex = shuffledOptions.indexOf(q.options[q.answer]);
+
     container.innerHTML = `
         <div class="mb-4">
             <h2 class="text-xl md:text-2xl font-semibold mb-6 text-center">প্রশ্ন ${currentQuestionIndex + 1}: ${q.question}</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 ${shuffledOptions.map((opt, i) => `
-                    <button class="option-btn" onclick="selectAnswer(${i}, ${correctAnswerIndex})" data-index="${i}">
+                    <button class="option-btn" onclick="selectAnswer(${i}, ${currentCorrectAnswerIndex})" data-index="${i}">
                         <span class="option-prefix">${String.fromCharCode(65 + i)}.</span>
                         <span>${opt}</span>
                     </button>
@@ -72,23 +127,31 @@ window.selectAnswer = function(selectedIndex, correctBtnIndex) {
     if (selectedAnswer !== null) return;
     clearInterval(timerInterval);
     selectedAnswer = selectedIndex;
-    document.querySelectorAll(".option-btn").forEach((btn) => (btn.disabled = true));
+
+    document.querySelectorAll(".option-btn").forEach(btn => btn.disabled = true);
+    
     const correctBtn = document.querySelector(`[data-index="${correctBtnIndex}"]`);
-    correctBtn.classList.add("correct");
+    if (correctBtn) correctBtn.classList.add("correct");
 
     if (selectedIndex !== correctBtnIndex) {
-        document.querySelector(`[data-index="${selectedIndex}"]`).classList.add("incorrect");
+        const selectedBtn = document.querySelector(`[data-index="${selectedIndex}"]`);
+        if (selectedBtn) selectedBtn.classList.add("incorrect");
         wrongCount++;
         wrongSound.play();
     } else {
         correctCount++;
         correctSound.play();
     }
+    
     userAnswers[currentQuestionIndex] = selectedIndex;
     document.getElementById("correct-count").textContent = `✔️ ${correctCount}`;
     document.getElementById("wrong-count").textContent = `❌ ${wrongCount}`;
-    document.getElementById("nextBtn").disabled = false;
-    document.getElementById("nextBtn").focus();
+    
+    const nextBtn = document.getElementById("nextBtn");
+    if (nextBtn) {
+        nextBtn.disabled = false;
+        nextBtn.focus();
+    }
 };
 
 function nextQuestion() {
@@ -102,25 +165,18 @@ function nextQuestion() {
 }
 
 // ===============================================
-// --- showFinalResult Function (Fully Firebase based) ---
+// --- Result Display & Review Section ---
 // ===============================================
+
 function showFinalResult() {
     clearInterval(timerInterval);
     
-    // ফলাফল স্বয়ংক্রিয়ভাবে Firebase-এ সেভ করা
     if (quizSet.chapterName && quizSet.setName) {
-        saveDetailedQuizResult(
-            quizSet.chapterName, 
-            quizSet.setName, 
-            correctCount, 
-            wrongCount, 
-            quizSet.questions.length
-        );
+        saveDetailedQuizResult(quizSet.chapterName, quizSet.setName, correctCount, wrongCount, quizSet.questions.length);
     } else {
         console.error("`quizSet.chapterName` or `quizSet.setName` is not defined. Score cannot be saved.");
     }
 
-    // ফলাফল দেখানোর জন্য নতুন, পরিষ্কার UI
     const container = document.getElementById("quiz-container");
     container.innerHTML = `
         <div class="text-center space-y-5">
@@ -143,7 +199,7 @@ function showReview() {
         const userAnswerIndex = userAnswers[i];
         const shuffledOptions = shuffledOptionsPerQuestion[i];
         const correctAnswerIndex = shuffledOptions.indexOf(q.options[q.answer]);
-        let isCorrect = userAnswerIndex === correctAnswerIndex;
+        const isCorrect = userAnswerIndex === correctAnswerIndex;
         reviewHTML += `
             <div class="review-card text-left ${isCorrect ? "review-correct" : "review-incorrect"}">
                 <h3 class="font-semibold mb-2">📝 প্রশ্ন ${i + 1}: ${q.question}</h3>
@@ -158,16 +214,9 @@ function showReview() {
 }
 
 // ===============================================
-// --- NEW & ADVANCED: Detailed Firebase Saving Function ---
+// --- Firebase Data Saving Section ---
 // ===============================================
-/**
- * এই ফাংশনটি অধ্যায় এবং কুইজ সেটের বিস্তারিত ফলাফল Firestore-এর 'users' কালেকশনে সেভ করে।
- * @param {string} chapterName - অধ্যায়ের নাম (e.g., "কার্য, ক্ষমতা ও শক্তি")
- * @param {string} setName - কুইজ সেটের নাম (e.g., "Set 1")
- * @param {number} correctCount - সঠিক উত্তরের সংখ্যা
- * @param {number} wrongCount - ভুল উত্তরের সংখ্যা
- * @param {number} totalQuestions - মোট প্রশ্ন সংখ্যা
- */
+
 async function saveDetailedQuizResult(chapterName, setName, correctCount, wrongCount, totalQuestions) {
     const user = firebase.auth().currentUser;
     if (!user) {
@@ -184,17 +233,14 @@ async function saveDetailedQuizResult(chapterName, setName, correctCount, wrongC
             const userDoc = await transaction.get(userRef);
             const userData = userDoc.exists ? userDoc.data() : {};
             
-            // পুরোনো ডেটা আনা
             const oldChapterData = userData.chapters?.[chapterKey] || {};
             const oldSetData = oldChapterData.quiz_sets?.[setKey] || {};
 
-            // যদি এই কুইজ সেটটি আগে দেওয়া হয়ে থাকে, তাহলে পুরোনো স্কোর বাদ দিয়ে নতুনটা যোগ হবে
             const scoreChange = correctCount - (oldSetData.score || 0);
             const correctChange = correctCount - (oldSetData.correct || 0);
             const wrongChange = wrongCount - (oldSetData.wrong || 0);
             const isNewAttempt = !oldSetData.score;
 
-            // নতুন ডেটা তৈরি করা
             const updatedData = {
                 displayName: user.displayName || 'Unknown User',
                 email: user.email,
@@ -232,17 +278,34 @@ async function saveDetailedQuizResult(chapterName, setName, correctCount, wrongC
 }
 
 // ===============================================
-// --- Keyboard & App Initialization ---
+// --- Keyboard Navigation Section (FIXED) ---
 // ===============================================
-function setupKeyboard() { /* ... Your existing keyboard code ... */ }
-document.addEventListener("DOMContentLoaded", () => {
-    setupModeToggle();
-    if (typeof quizSet !== "undefined" && quizSet.questions) {
-        document.getElementById("quiz-title").textContent = quizSet.name;
-        shuffleArray(quizSet.questions);
-        showQuestion();
-        setupKeyboard();
-    } else {
-        document.getElementById("quiz-container").innerHTML = "<p class='text-red-600 font-bold text-center'>দুঃখিত, প্রশ্ন সেট লোড করা যায়নি।</p>";
-    }
-});
+
+function setupKeyboard() {
+    document.addEventListener("keydown", function (event) {
+        if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+            return; // Don't interfere with typing
+        }
+        
+        // Handle "Enter" to go to the next question
+        const nextBtn = document.getElementById("nextBtn");
+        if (event.key === "Enter" && nextBtn && !nextBtn.disabled) {
+            nextQuestion();
+        }
+        
+        // Handle answer selection with 1,2,3,4 or a,b,c,d keys
+        if (selectedAnswer === null) {
+            const keyMap = {'1': 0, '2': 1, '3': 2, '4': 3, 'a': 0, 'b': 1, 'c': 2, 'd': 3};
+            const index = keyMap[event.key.toLowerCase()];
+            
+            if (index !== undefined) {
+                event.preventDefault(); // Prevent default browser action (e.g., scrolling)
+                const buttons = document.querySelectorAll(".option-btn");
+                if (index < buttons.length) {
+                    // FIXED: Directly call the selectAnswer function
+                    selectAnswer(index, currentCorrectAnswerIndex);
+                }
+            }
+        }
+    });
+}
