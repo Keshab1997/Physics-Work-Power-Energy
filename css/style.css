@@ -153,15 +153,18 @@ thead { background-color: var(--accent-color-light); }
 body.dark-mode thead { background-color: #2d3748; }
 td i.fa-trophy, td i.fa-medal { margin-right: 8px; font-size: 1.2em; }
 
-/* === NEW TOOLTIP STYLE === */
+/* === NEW TOOLTIP STYLE (FIXED) === */
 .tooltip-trigger {
     position: relative;
     cursor: pointer;
     border-bottom: 1px dashed var(--text-color);
+    display: inline-block;
 }
+
 .tooltip-content {
     visibility: hidden;
-    width: 220px;
+    min-width: 180px;
+    max-width: 260px;
     background-color: #333;
     color: #fff;
     text-align: left;
@@ -171,36 +174,63 @@ td i.fa-trophy, td i.fa-medal { margin-right: 8px; font-size: 1.2em; }
     z-index: 1;
     bottom: 125%; /* Position above the trigger */
     left: 50%;
-    margin-left: -110px; /* Center the tooltip */
+    transform: translateX(-50%);
     opacity: 0;
     transition: opacity 0.3s;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    word-break: break-word;
+    white-space: normal;
 }
-body.dark-mode .tooltip-content { background-color: #f0f0f0; color: #333; }
+
+body.dark-mode .tooltip-content {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
 .tooltip-content::after { /* Tooltip arrow */
     content: "";
     position: absolute;
     top: 100%;
     left: 50%;
-    margin-left: -5px;
+    transform: translateX(-50%);
     border-width: 5px;
     border-style: solid;
     border-color: #333 transparent transparent transparent;
 }
-body.dark-mode .tooltip-content::after { border-color: #f0f0f0 transparent transparent transparent; }
 
-.tooltip-trigger:hover .tooltip-content {
+body.dark-mode .tooltip-content::after {
+    border-color: #f0f0f0 transparent transparent transparent;
+}
+
+.tooltip-trigger:hover .tooltip-content,
+.tooltip-trigger:focus .tooltip-content {
     visibility: visible;
     opacity: 1;
 }
+
 .tooltip-content .score-item {
     padding: 4px 0;
     font-size: 0.9rem;
     border-bottom: 1px solid #555;
 }
-body.dark-mode .tooltip-content .score-item { border-bottom: 1px solid #ccc; }
+
+body.dark-mode .tooltip-content .score-item {
+    border-bottom: 1px solid #ccc;
+}
+
 .tooltip-content .score-item:last-child {
     border-bottom: none;
+}
+
+/* Responsive: Tooltip will not overflow screen */
+@media (max-width: 400px) {
+    .tooltip-content {
+        min-width: 120px;
+        max-width: 90vw;
+        font-size: 0.95rem;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }
 /* ======================== */
 
