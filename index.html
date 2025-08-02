@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ড্যাশবোর্ড | Study With Keshab</title>
+    <title>কার্য, ক্ষমতা ও শক্তি | Study With Keshab</title>
     
     <!-- প্রধান CSS ফাইল -->
     <link rel="stylesheet" href="css/style.css">
@@ -11,10 +11,10 @@
     <!-- আইকন ব্যবহারের জন্য Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
-    <!-- চার্ট ব্যবহারের জন্য Chart.js (ভার্সন 2.9.4) -->
+    <!-- চার্ট ব্যবহারের জন্য Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
     
-    <!-- পেজ হাইড করার জন্য স্টাইল -->
+    <!-- পেজ লোডিং এর সময় হাইড করার জন্য স্টাইল -->
     <style>
       body.auth-loading { visibility: hidden; opacity: 0; }
     </style>
@@ -24,9 +24,6 @@
     <div id="preloader">
         <div class="loader"></div>
     </div>
-
-    <!-- থিম সুইচার (ঐচ্ছিক) -->
-    <!-- <div class="theme-switcher"> ... </div> -->
 
     <header class="main-header">
         <img src="images/logo.jpg" alt="লোগো" class="profile-pic" id="logo-easter-egg">
@@ -54,6 +51,11 @@
     </nav>
 
     <main>
+        <!-- === এই লাইনটি নতুন যোগ করা হয়েছে === -->
+        <script>
+            const CURRENT_CHAPTER_NAME = "কার্য, ক্ষমতা ও শক্তি";
+        </script>
+
         <!-- ইউজার প্রোফাইল কার্ড -->
         <section class="card" id="user-profile-card">
             <div class="profile-header">
@@ -65,7 +67,7 @@
             </div>
         </section>
 
-        <!-- ড্যাশবোর্ড সেকশন (সম্পূর্ণভাবে কার্যকরী) -->
+        <!-- ড্যাশবোর্ড সেকশন -->
         <section class="card" id="dashboard">
              <h2><i class="fa-solid fa-chart-line icon-title"></i> আমার ড্যাশবোর্ড</h2>
              <div class="dashboard-grid">
@@ -105,26 +107,17 @@
             </div>
         </section>
 
-        <!-- লিডারবোর্ড সেکشن (ড্রপডাউন সহ উন্নত) -->
-<section class="card" id="leaderboard">
-    <h2><i class="fa-solid fa-trophy icon-title"></i> লিডারবোর্ড</h2>
-    <p>এই অধ্যায়ের সর্বোচ্চ স্কোরারদের তালিকা। বিস্তারিত দেখতে নামের পাশের বাটনে ক্লিক করুন।</p>
-    <div class="leaderboard-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>নাম</th>
-                    <th>মোট স্কোর</th>
-                    <th>বিস্তারিত</th>
-                </tr>
-            </thead>
-            <tbody id="leaderboard-body">
-                <!-- JavaScript দ্বারা ডেটা লোড হবে -->
-            </tbody>
-        </table>
-    </div>
-</section>
+        <!-- লিডারবোর্ড সেকশন -->
+        <section class="card" id="leaderboard">
+            <h2><i class="fa-solid fa-trophy icon-title"></i> লিডারবোর্ড</h2>
+            <p>এই অধ্যায়ের সর্বোচ্চ স্কোরারদের তালিকা। বিস্তারিত দেখতে নামের পাশের বাটনে ক্লিক করুন।</p>
+            <div class="leaderboard-container">
+                <table>
+                    <thead><tr><th>#</th><th>নাম</th><th>মোট স্কোর</th><th>বিস্তারিত</th></tr></thead>
+                    <tbody id="leaderboard-body"><!-- JavaScript দ্বারা ডেটা লোড হবে --></tbody>
+                </table>
+            </div>
+        </section>
         
     </main>
     
