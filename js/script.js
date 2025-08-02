@@ -1,4 +1,4 @@
-// Filename: js/script.js - Upgraded for Dashboard & Leaderboard
+// Filename: js/script.js - Upgraded for Dashboard & Dropdown Leaderboard
 document.addEventListener('DOMContentLoaded', () => {
     // Firebase Authentication Check
     firebase.auth().onAuthStateChanged(user => {
@@ -32,8 +32,8 @@ function initApp(user) {
     setupUIInteractions();
     
     // --- Firebase থেকে অধ্যায়-ভিত্তিক ডেটা লোড ---
-    loadChapterLeaderboard(db, chapterKey); // উন্নত লিডারবোর্ড
-    loadDashboardData(db, user.uid, chapterKey); // ড্যাশবোর্ডের জন্য নতুন ফাংশন
+    loadChapterLeaderboard(db, chapterKey); // **ড্রপডাউনসহ উন্নত লিডারবোর্ড**
+    loadDashboardData(db, user.uid, chapterKey);
 }
 
 // ===============================================
@@ -98,6 +98,42 @@ function setupUIInteractions() {
             backToTop.style.display = 'none';
         }
     });
+
+    // ************* নতুন কোড: লিডারবোর্ড ড্রপডাউন ক্লিক হ্যান্ডলার *************
+    const leaderboardBody = document.getElementById('leaderboard-body');
+    if (leaderboardBody) {
+        leaderboardBody.addEventListener('click', function(event) {
+            const button = event.target.closest('.toggle-details-btn');
+            if (!button) return;
+
+            const mainRow = button.closest('.leaderboard-row');
+            const detailsRow = mainRow.nextElementSibling;
+            
+            // সব খোলা ড্রপডাউন বন্ধ করি, শুধু ক্লিক করাটি ছাড়া
+            document.querySelectorAll('.details-row').forEach(row => {
+                if (row !== detailsRow && row.style.display === 'table-row') {
+                    row.style.display = 'none';
+                    const prevBtnIcon = row.previousElementSibling.querySelector('.toggle-details-btn i');
+                    if (prevBtnIcon) {
+                        prevBtnIcon.classList.remove('fa-chevron-up');
+                        prevBtnIcon.classList.add('fa-chevron-down');
+                    }
+                }
+            });
+
+            // বর্তমান ড্রপডাউনটি টগল করি
+            const icon = button.querySelector('i');
+            if (detailsRow.style.display === 'table-row') {
+                detailsRow.style.display = 'none';
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            } else {
+                detailsRow.style.display = 'table-row';
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            }
+        });
+    }
 }
 
 // ===============================================
@@ -105,7 +141,7 @@ function setupUIInteractions() {
 // ===============================================
 
 /**
- * [IMPROVED & FINAL] Loads leaderboard data with a detailed score tooltip.
+ * [FINAL VERSION with DROPDOWN] Loads leaderboard data.
  * @param {firebase.firestore.Firestore} db
  * @param {string} chapterKey - The Firestore-safe key for the chapter.
  */
@@ -122,7 +158,7 @@ function loadChapterLeaderboard(db, chapterKey) {
                 return;
             }
 
-            leaderboardBody.innerHTML = '';
+            let leaderboardHTML = '';
             let rank = 1;
             let foundScores = false;
 
@@ -132,15 +168,14 @@ function loadChapterLeaderboard(db, chapterKey) {
                 
                 if (chapterData && chapterData.totalScore > 0) {
                     foundScores = true;
-                    const row = document.createElement('tr');
                     
                     let icon = '';
                     if (rank === 1) icon = '<i class="fa-solid fa-trophy" style="color: #ffd700;"></i> ';
                     else if (rank === 2) icon = '<i class="fa-solid fa-medal" style="color: #c0c0c0;"></i> ';
                     else if (rank === 3) icon = '<i class="fa-solid fa-medal" style="color: #cd7f32;"></i> ';
                     
-                    // --- বিস্তারিত স্কোরের জন্য টুলটিপ তৈরি ---
-                    let tooltipHtml = 'N/A';
+                    // --- বিস্তারিত স্কোরের জন্য ড্রপডাউন কন্টেন্ট তৈরি ---
+                    let scoreDetailsHTML = '<li>কোনো বিস্তারিত স্কোর নেই।</li>';
                     if (chapterData.quiz_sets) {
                         const sortedSets = Object.entries(chapterData.quiz_sets)
                             .sort((a, b) => {
@@ -149,32 +184,44 @@ function loadChapterLeaderboard(db, chapterKey) {
                                 return numA - numB;
                             });
 
-                        const scoreDetails = sortedSets.map(([setName, setData]) => {
+                        scoreDetailsHTML = sortedSets.map(([setName, setData]) => {
                             const cleanSetName = setName.replace('_', ' ');
-                            return `<div class="score-item">${cleanSetName}: <strong>${setData.score}/${setData.totalQuestions}</strong></div>`;
+                            return `<li><span class="label">${cleanSetName}:</span> ${setData.score}/${setData.totalQuestions}</li>`;
                         }).join('');
-                        
-                        tooltipHtml = `
-                            <div class="tooltip-trigger">
-                                বিস্তারিত দেখুন
-                                <div class="tooltip-content">${scoreDetails}</div>
-                            </div>
-                        `;
                     }
-                    // --- টুলটিপ তৈরি শেষ ---
+                    // --- ড্রপডাউন কন্টেন্ট তৈরি শেষ ---
 
-                    row.innerHTML = `
-                        <td>${icon}${rank}</td>
-                        <td>${userData.displayName || 'Unknown User'}</td>
-                        <td><strong>${chapterData.totalScore}</strong></td>
-                        <td>${tooltipHtml}</td>
+                    // প্রধান সারি
+                    leaderboardHTML += `
+                        <tr class="leaderboard-row">
+                            <td>${icon}${rank}</td>
+                            <td>${userData.displayName || 'Unknown User'}</td>
+                            <td><strong>${chapterData.totalScore}</strong></td>
+                            <td>
+                                <button class="toggle-details-btn" aria-label="বিস্তারিত দেখুন">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </td>
+                        </tr>
                     `;
-                    leaderboardBody.appendChild(row);
+
+                    // লুকানো বিস্তারিত সারি
+                    leaderboardHTML += `
+                        <tr class="details-row">
+                            <td colspan="4">
+                                <div class="details-content">
+                                    <ul>${scoreDetailsHTML}</ul>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
                     rank++;
                 }
             });
 
-            if (!foundScores) {
+            if (foundScores) {
+                leaderboardBody.innerHTML = leaderboardHTML;
+            } else {
                  leaderboardBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">এই অধ্যায়ের জন্য কোনো স্কোর পাওয়া যায়নি।</td></tr>';
             }
         })
@@ -184,14 +231,15 @@ function loadChapterLeaderboard(db, chapterKey) {
         });
 }
 
+
 /**
- * [NEW & FUNCTIONAL] Loads all data for the user dashboard.
+ * [UNCHANGED] Loads all data for the user dashboard.
  * @param {firebase.firestore.Firestore} db
  * @param {string} userId - The current user's ID.
  * @param {string} chapterKey - The Firestore-safe key for the chapter.
  */
 function loadDashboardData(db, userId, chapterKey) {
-    const totalQuizzesInChapter = 9; // এই অধ্যায়ে মোট কুইজের সংখ্যা
+    const totalQuizzesInChapter = 9;
 
     db.collection('users').doc(userId).get().then(doc => {
         let chapterData = {};
@@ -199,23 +247,13 @@ function loadDashboardData(db, userId, chapterKey) {
             chapterData = doc.data().chapters[chapterKey];
         }
 
-        // 1. অধ্যায়ের অগ্রগতি আপডেট
-        const completedQuizzes = chapterData.completedQuizzesCount || 0;
-        updateChapterProgress(completedQuizzes, totalQuizzesInChapter);
-
-        // 2. পারফরম্যান্স পাই চার্ট আপডেট
-        const totalCorrect = chapterData.totalCorrect || 0;
-        const totalWrong = chapterData.totalWrong || 0;
-        updatePieChart(totalCorrect, totalWrong);
-
-        // 3. অ্যাচিভমেন্টস আপডেট
+        updateChapterProgress(chapterData.completedQuizzesCount || 0, totalQuizzesInChapter);
+        updatePieChart(chapterData.totalCorrect || 0, chapterData.totalWrong || 0);
         updateUserAchievements(chapterData);
-
-        // 4. দৈনিক চ্যালেঞ্জ লোড
         loadDailyChallenge();
+
     }).catch(error => {
         console.error("Error loading user dashboard data:", error);
-        // ডিফল্ট ভ্যালু দিয়ে ড্যাশবোর্ড দেখানো
         updateChapterProgress(0, totalQuizzesInChapter);
         updatePieChart(0, 0);
         updateUserAchievements({});
@@ -224,14 +262,13 @@ function loadDashboardData(db, userId, chapterKey) {
 }
 
 // ===============================================
-// --- Dashboard Update Functions ---
+// --- Dashboard Update Functions (UNCHANGED) ---
 // ===============================================
 
 function updateChapterProgress(completed, total) {
     const progressBar = document.getElementById('chapter-progress-bar');
     const progressText = document.getElementById('chapter-progress-text');
     if (!progressBar || !progressText) return;
-
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
     progressBar.style.width = `${percentage}%`;
     progressText.textContent = `${percentage}% সম্পন্ন (${completed}/${total}টি কুইজ)`;
@@ -241,11 +278,7 @@ let myPieChart = null;
 function updatePieChart(correct, wrong) {
     const ctx = document.getElementById('quiz-pie-chart')?.getContext('2d');
     if (!ctx) return;
-
-    if (myPieChart) {
-        myPieChart.destroy(); // পুরনো চার্ট মুছে ফেলা
-    }
-    
+    if (myPieChart) myPieChart.destroy();
     const chartData = (correct === 0 && wrong === 0) 
         ? { labels: ['এখনো কোনো কুইজ দেননি'], datasets: [{ data: [1], backgroundColor: ['#bdc3c7'] }] }
         : {
@@ -257,24 +290,14 @@ function updatePieChart(correct, wrong) {
                 borderWidth: 3
             }]
         };
-
     myPieChart = new Chart(ctx, {
         type: 'pie',
         data: chartData,
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            legend: {
-                position: 'bottom',
-                labels: {
-                    fontColor: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#34495e',
-                    fontFamily: "'Hind Siliguri', sans-serif"
-                }
-            },
-            tooltips: {
-                titleFontFamily: "'Hind Siliguri', sans-serif",
-                bodyFontFamily: "'Hind Siliguri', sans-serif",
-            }
+            legend: { position: 'bottom', labels: { fontColor: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#34495e', fontFamily: "'Hind Siliguri', sans-serif" }},
+            tooltips: { titleFontFamily: "'Hind Siliguri', sans-serif", bodyFontFamily: "'Hind Siliguri', sans-serif" }
         }
     });
 }
@@ -282,13 +305,11 @@ function updatePieChart(correct, wrong) {
 function updateUserAchievements(chapterData) {
     const achievementsContainer = document.getElementById('achievements-container');
     if (!achievementsContainer) return;
-
     const achievementConfig = [
         { id: 'first_quiz', title: 'প্রথম পদক্ষেপ', icon: 'fa-shoe-prints', criteria: data => (data.completedQuizzesCount || 0) >= 1, desc: "এই অধ্যায়ের প্রথম কুইজ সম্পন্ন করেছেন!" },
         { id: 'quiz_master', title: 'কুইজ মাস্টার', icon: 'fa-brain', criteria: data => (data.completedQuizzesCount || 0) >= 5, desc: "এই অধ্যায়ের ৫টি কুইজ সম্পন্ন করেছেন!" },
         { id: 'chapter_winner', title: 'অধ্যায় বিজয়ী', icon: 'fa-crown', criteria: data => (data.completedQuizzesCount || 0) >= 9, desc: "এই অধ্যায়ের সব কুইজ সম্পন্ন করেছেন!" }
     ];
-
     achievementsContainer.innerHTML = '';
     achievementConfig.forEach(ach => {
         const unlocked = ach.criteria(chapterData);
@@ -309,7 +330,6 @@ function loadDailyChallenge() {
         "ক্লাস নোট ১ এবং ২ রিভিশন দাও।",
         "গতিশক্তি ও বিভবশক্তির মধ্যে পার্থক্যগুলো লেখো।"
     ];
-    // দিনের উপর ভিত্তি করে একটি চ্যালেঞ্জ দেখানো হয়
     const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
     challengeText.textContent = challenges[dayOfYear % challenges.length];
 }

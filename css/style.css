@@ -268,3 +268,58 @@ footer { text-align: center; padding: 30px 0; margin-top: 30px; border-top: 1px 
     .card { padding: 20px; }
     .dark-mode-button { top: 10px; right: 10px; }
 }
+/* === লিডারবোর্ড ড্রপডাউন স্টাইল === */
+
+/* বিস্তারিত দেখার জন্য বাটন */
+.toggle-details-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color, #3498db); /* থিমের প্রাইমারি কালার ব্যবহার করবে */
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 5px;
+    transition: transform 0.3s ease;
+}
+
+/* বাটনটি খোলা অবস্থায় আইকন ঘুরে যাবে */
+.toggle-details-btn.open {
+    transform: rotate(180deg);
+}
+
+/* বিস্তারিত স্কোর দেখানোর সারি (ডিফল্টভাবে লুকানো) */
+.details-row {
+    display: none; /* ডিফল্টভাবে এই সারি লুকানো থাকবে */
+}
+
+/* বিস্তারিত সারির কন্টেন্ট স্টাইল */
+.details-content {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-left: 4px solid var(--primary-color, #3498db);
+}
+
+/* ডার্ক মোডে বিস্তারিত সারির স্টাইল */
+body.dark-mode .details-content {
+    background-color: #2c2c2c;
+    border-left-color: var(--primary-color, #3498db);
+}
+
+.details-content ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.details-content li {
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.details-content li .label {
+    font-weight: bold;
+    color: #555;
+}
+
+body.dark-mode .details-content li .label {
+    color: #bbb;
+}
