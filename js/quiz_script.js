@@ -1,4 +1,4 @@
-// Filename: quiz/js/script.js - Upgraded for correct leaderboard saving
+// Filename: quiz/js/script.js - Upgraded with consistent key generation
 
 // ===============================================
 // --- App Initialization & Global Variables ---
@@ -106,7 +106,6 @@ function nextQuestion() {
 function showFinalResult() {
     clearInterval(timerInterval);
     
-    // স্কোর সেভ করার জন্য নতুন ফাংশন কল করা হবে
     if (quizSet.chapterName && quizSet.setName) {
         saveQuizResult(quizSet.chapterName, quizSet.setName, correctCount, wrongCount, quizSet.questions.length);
     } else {
@@ -152,18 +151,16 @@ function saveQuizResult(chapterName, setName, score, wrong, totalQuestions) {
     const db = firebase.firestore();
     const userDocRef = db.collection('users').doc(user.uid);
 
+    // === এই লাইনটি পরিবর্তন করা হয়েছে ===
     // অধ্যায়ের নাম এবং সেটের নামকে Firestore-এর জন্য নিরাপদ কী-তে রূপান্তর করি
-    const chapterKey = chapterName.replace(/\s/g, '_'); // "কার্য, ক্ষমতা ও শক্তি" -> "কার্য,_ক্ষমতা_ও_শক্তি"
-    const setKey = setName.replace(/\s/g, '_'); // "Quiz Set 1" -> "Quiz_Set_1"
+    // এটি এখন মূল ড্যাশবোর্ড স্ক্রিপ্টের সাথে সামঞ্জস্যপূর্ণ
+    const chapterKey = chapterName.replace(/\s+/g, '_').replace(/,/g, ''); 
+    const setKey = setName.replace(/\s/g, '_'); 
 
     db.runTransaction(transaction => {
         return transaction.get(userDocRef).then(doc => {
             if (!doc.exists) {
-                // যদি ইউজারের কোনো ডকুমেন্ট না থাকে, তবে একটি নতুন ডকুমেন্ট তৈরি হবে
-                // এটি সাধারণত হবে না কারণ লগইন করার সময় ডকুমেন্ট তৈরি হওয়ার কথা
-                console.error("User document does not exist!");
-                // আপনি চাইলে এখানে নতুন ডকুমেন্ট তৈরি করতে পারেন
-                // transaction.set(userDocRef, { displayName: user.displayName, email: user.email });
+                console.error("User document does not exist! This shouldn't happen if the user is logged in.");
                 return;
             }
 
