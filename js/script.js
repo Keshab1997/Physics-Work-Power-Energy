@@ -1,4 +1,4 @@
-// Filename: js/script.js - Upgraded for Chapter-Based Dashboard & Leaderboard
+// Filename: js/script.js - Upgraded for Dynamic Quiz Count
 
 document.addEventListener('DOMContentLoaded', () => {
     // Firebase Authentication Check
@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
             initApp(user);
         } else {
             // যদি ব্যবহারকারী লগইন করা না থাকে, তাহলে লগইন পেজে পাঠিয়ে দেওয়া হবে।
-            // এই লিঙ্কটি আপনার মূল ওয়েবসাইটের লগইন পেজের লিঙ্ক হওয়া উচিত।
             window.location.href = 'https://keshab1997.github.io/Study-With-Keshab/login.html';
         }
     });
@@ -29,9 +28,8 @@ function initApp(user) {
     // অধ্যায়ের নাম HTML ফাইল থেকে dynamically লোড করা হচ্ছে
     if (typeof CURRENT_CHAPTER_NAME === 'undefined') {
         console.error("অধ্যায়ের নাম (CURRENT_CHAPTER_NAME) HTML ফাইলে সেট করা হয়নি।");
-        // একটি ডিফল্ট নাম ব্যবহার করা হচ্ছে বা একটি এরর দেখানো যেতে পারে
-        const chapterName = "Unknown Chapter"; 
         alert("ত্রুটি: অধ্যায়ের নাম পাওয়া যায়নি।");
+        return; // Stop execution if chapter name is missing
     }
     const chapterName = CURRENT_CHAPTER_NAME;
     const chapterKey = chapterName.replace(/\s+/g, '_').replace(/,/g, ''); // Firestore-এর জন্য নিরাপদ কী
@@ -70,14 +68,15 @@ function setupUIInteractions() {
     }
     if (darkModeToggle) {
         darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            document.body.classList.toggle('day-mode');
+            
             if (document.body.classList.contains('dark-mode')) {
-                document.body.classList.replace('dark-mode', 'day-mode');
-                darkModeToggle.innerHTML = '<i class="fa-solid fa-moon"></i>';
-                localStorage.setItem('theme', 'day');
-            } else {
-                document.body.classList.replace('day-mode', 'dark-mode');
                 darkModeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
                 localStorage.setItem('theme', 'dark');
+            } else {
+                darkModeToggle.innerHTML = '<i class="fa-solid fa-moon"></i>';
+                localStorage.setItem('theme', 'day');
             }
             if(myPieChart) myPieChart.update();
         });
@@ -125,9 +124,11 @@ function setupUIInteractions() {
 
             const mainRow = button.closest('.leaderboard-row');
             const detailsRow = mainRow.nextElementSibling;
-            
+            const isVisible = detailsRow.style.display === 'table-row';
+
+            // Close all other open details
             document.querySelectorAll('.details-row').forEach(row => {
-                if (row !== detailsRow && row.style.display === 'table-row') {
+                if (row !== detailsRow) {
                     row.style.display = 'none';
                     const prevBtnIcon = row.previousElementSibling.querySelector('.toggle-details-btn i');
                     if (prevBtnIcon) {
@@ -137,16 +138,11 @@ function setupUIInteractions() {
                 }
             });
 
+            // Toggle the clicked one
+            detailsRow.style.display = isVisible ? 'none' : 'table-row';
             const icon = button.querySelector('i');
-            if (detailsRow.style.display === 'table-row') {
-                detailsRow.style.display = 'none';
-                icon.classList.remove('fa-chevron-up');
-                icon.classList.add('fa-chevron-down');
-            } else {
-                detailsRow.style.display = 'table-row';
-                icon.classList.remove('fa-chevron-down');
-                icon.classList.add('fa-chevron-up');
-            }
+            icon.classList.toggle('fa-chevron-up', !isVisible);
+            icon.classList.toggle('fa-chevron-down', isVisible);
         });
     }
 }
@@ -207,7 +203,7 @@ function loadChapterLeaderboard(db, chapterKey) {
                             <td><strong>${chapterData.totalScore}</strong></td>
                             <td><button class="toggle-details-btn" aria-label="বিস্তারিত দেখুন"><i class="fas fa-chevron-down"></i></button></td>
                         </tr>
-                        <tr class="details-row">
+                        <tr class="details-row" style="display: none;">
                             <td colspan="4"><div class="details-content"><ul>${scoreDetailsHTML}</ul></div></td>
                         </tr>
                     `;
@@ -235,13 +231,10 @@ function loadChapterLeaderboard(db, chapterKey) {
  * @param {string} chapterKey - The Firestore-safe key for the chapter.
  */
 function loadDashboardData(db, userId, chapterKey) {
-    // এই অধ্যায়ে মোট কুইজের সংখ্যা (আপনাকে এটি প্রতিটি অধ্যায়ের জন্য ঠিক করতে হবে)
-    // একটি ভালো উপায় হলো এটি HTML-এ ডিফাইন করা
-    let totalQuizzesInChapter = 14; // ডিফল্ট ভ্যালু (আলো অধ্যায়ের জন্য)
-    if (chapterKey === 'কার্য_ক্ষমতা_ও_শক্তি') {
-        totalQuizzesInChapter = 9; // কার্য, ক্ষমতা ও শক্তি অধ্যায়ের জন্য
-    }
-    // ভবিষ্যতে নতুন অধ্যায় যোগ করলে এখানে যোগ করতে হবে
+    // *** IMPROVEMENT: Dynamically count quizzes from the HTML ***
+    // This makes the script reusable for any chapter without modification.
+    const quizLinks = document.querySelectorAll('#quiz-sets .link-container a');
+    const totalQuizzesInChapter = quizLinks.length;
 
     db.collection('users').doc(userId).get().then(doc => {
         let chapterData = {};
@@ -256,6 +249,7 @@ function loadDashboardData(db, userId, chapterKey) {
 
     }).catch(error => {
         console.error("Error loading user dashboard data:", error);
+        // Fallback with correct total quiz count
         updateChapterProgress(0, totalQuizzesInChapter);
         updatePieChart(0, 0);
         updateUserAchievements({}, totalQuizzesInChapter);
@@ -271,7 +265,10 @@ function updateChapterProgress(completed, total) {
     const progressBar = document.getElementById('chapter-progress-bar');
     const progressText = document.getElementById('chapter-progress-text');
     if (!progressBar || !progressText) return;
+    
+    // Handle case where total is 0 to avoid division by zero
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+    
     progressBar.style.width = `${percentage}%`;
     progressText.textContent = `${percentage}% সম্পন্ন (${completed}/${total}টি কুইজ)`;
 }
@@ -281,6 +278,9 @@ function updatePieChart(correct, wrong) {
     const ctx = document.getElementById('quiz-pie-chart')?.getContext('2d');
     if (!ctx) return;
     if (myPieChart) myPieChart.destroy();
+    
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    
     const chartData = (correct === 0 && wrong === 0) 
         ? { labels: ['এখনো কোনো কুইজ দেননি'], datasets: [{ data: [1], backgroundColor: ['#bdc3c7'] }] }
         : {
@@ -288,18 +288,28 @@ function updatePieChart(correct, wrong) {
             datasets: [{
                 data: [correct, wrong],
                 backgroundColor: ['#2ecc71', '#e74c3c'],
-                borderColor: document.body.classList.contains('dark-mode') ? '#1e1e1e' : '#ffffff',
+                borderColor: isDarkMode ? '#1e1e1e' : '#ffffff',
                 borderWidth: 3
             }]
         };
+        
     myPieChart = new Chart(ctx, {
         type: 'pie',
         data: chartData,
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            legend: { position: 'bottom', labels: { fontColor: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#34495e', fontFamily: "'Hind Siliguri', sans-serif" }},
-            tooltips: { titleFontFamily: "'Hind Siliguri', sans-serif", bodyFontFamily: "'Hind Siliguri', sans-serif" }
+            legend: { 
+                position: 'bottom', 
+                labels: { 
+                    fontColor: isDarkMode ? '#e0e0e0' : '#34495e', 
+                    fontFamily: "'Hind Siliguri', sans-serif" 
+                }
+            },
+            tooltips: { 
+                titleFontFamily: "'Hind Siliguri', sans-serif", 
+                bodyFontFamily: "'Hind Siliguri', sans-serif" 
+            }
         }
     });
 }
@@ -307,18 +317,26 @@ function updatePieChart(correct, wrong) {
 function updateUserAchievements(chapterData, totalQuizzes) {
     const achievementsContainer = document.getElementById('achievements-container');
     if (!achievementsContainer) return;
+
+    // Do not show achievements if there are no quizzes in the chapter
+    if (totalQuizzes === 0) {
+        achievementsContainer.innerHTML = '<p>এই অধ্যায়ে কোনো অ্যাচিভমেন্ট নেই।</p>';
+        return;
+    }
+
     const completedCount = chapterData.completedQuizzesCount || 0;
     const achievementConfig = [
         { id: 'first_quiz', title: 'প্রথম পদক্ষেপ', icon: 'fa-shoe-prints', criteria: count => count >= 1, desc: "এই অধ্যায়ের প্রথম কুইজ সম্পন্ন করেছেন!" },
         { id: 'quiz_master', title: 'কুইজ মাস্টার', icon: 'fa-brain', criteria: count => count >= Math.ceil(totalQuizzes / 2), desc: `এই অধ্যায়ের অর্ধেক (${Math.ceil(totalQuizzes / 2)}টি) কুইজ সম্পন্ন করেছেন!` },
         { id: 'chapter_winner', title: 'অধ্যায় বিজয়ী', icon: 'fa-crown', criteria: count => count >= totalQuizzes, desc: "এই অধ্যায়ের সব কুইজ সম্পন্ন করেছেন!" }
     ];
+
     achievementsContainer.innerHTML = '';
     achievementConfig.forEach(ach => {
         const unlocked = ach.criteria(completedCount);
         const badge = document.createElement('div');
         badge.className = `achievement-badge ${unlocked ? 'unlocked' : ''}`;
-        badge.title = `${ach.title} - ${ach.desc}`;
+        badge.title = unlocked ? `${ach.title} - ${ach.desc}` : `${ach.title} (লকড)`;
         badge.innerHTML = `<i class="fa-solid ${ach.icon}"></i><span>${ach.title}</span>`;
         achievementsContainer.appendChild(badge);
     });
